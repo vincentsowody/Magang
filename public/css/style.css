@@ -1,0 +1,306 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+/* =========================================================
+   GLOBAL SETTINGS
+========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+
+/* =========================================================
+   CUSTOM SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+
+/* =========================================================
+   AIRPORT BACKGROUND
+========================================================= */
+
+.airport-bg {
+    background-color: #f1f5f9;
+    background-image: radial-gradient( at 0% 0%, hsla(198, 93%, 60%, 0.10) 0px, transparent 50%), radial-gradient( at 100% 100%, hsla(190, 90%, 50%, 0.10) 0px, transparent 50%), url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+
+/* =========================================================
+   HEADER GLASSMORPHISM PREMIUM
+========================================================= */
+
+.glass-panel {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+    position: relative;
+}
+
+
+/* efek glossy */
+
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( to bottom, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   HEADER CONTENT
+========================================================= */
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.header-brand img {
+    height: 34px;
+    object-fit: contain;
+}
+
+.divider-v {
+    width: 1px;
+    height: 26px;
+    background: #cbd5e1;
+}
+
+.brand-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #334155;
+}
+
+.header-title {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.header-subtitle {
+    color: #64748b;
+}
+
+#clock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #475569;
+}
+
+
+/* =========================================================
+   HEADER BUTTON
+========================================================= */
+
+.btn-power {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: #64748b;
+}
+
+.btn-power:hover {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #dc2626;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   NAV BUTTON
+========================================================= */
+
+.nav-btn {
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    color: #475569;
+}
+
+.nav-btn:hover {
+    background: rgba(14, 165, 233, 0.08);
+    color: #0284c7;
+}
+
+
+/* =========================================================
+   LOADING AIRPLANE
+========================================================= */
+
+.plane-loader {
+    width: 24px;
+    height: 24px;
+    animation: plane-spin 2s linear infinite;
+}
+
+@keyframes plane-spin {
+    0% {
+        transform: rotate(0deg) translateX(2px) rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg) translateX(2px) rotate(-360deg);
+    }
+}
+
+
+/* =========================================================
+   BOARDING PASS
+========================================================= */
+
+.boarding-pass {
+    background: white;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15), 0 10px 20px -10px rgba(0, 0, 0, 0.08);
+}
+
+
+/* garis sobekan */
+
+.boarding-pass::after {
+    content: '';
+    position: absolute;
+    top: 190px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-image: linear-gradient( to right, #cbd5e1 50%, rgba(255, 255, 255, 0) 0%);
+    background-position: bottom;
+    background-size: 12px 2px;
+    background-repeat: repeat-x;
+    z-index: 5;
+}
+
+
+/* notch kiri */
+
+.boarding-pass::before {
+    content: '';
+    position: absolute;
+    top: 180px;
+    left: -12px;
+    width: 24px;
+    height: 24px;
+    background-color: #f1f5f9;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
+
+/* notch kanan */
+
+.notch-right {
+    position: absolute;
+    top: 180px;
+    right: -12px;
+    width: 24px;
+    height: 24px;
+    background-color: #f1f5f9;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================================================
+   VIEW ANIMATION
+========================================================= */
+
+.view {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    transform: translateY(10px);
+}
+
+.view.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   FADE ANIMATION
+========================================================= */
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+    .header-brand img {
+        height: 28px;
+    }
+    .brand-label {
+        font-size: 10px;
+    }
+    #clock {
+        font-size: 12px;
+    }
+    .boarding-pass {
+        border-radius: 16px;
+    }
+}
