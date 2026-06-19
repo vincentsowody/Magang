@@ -21,5 +21,7 @@
 @include('admin.modals.reg-modal')
 @include('admin.modals.success-modal')
 @include('admin.modals.review-modal')
+<!-- Form tambahan untuk penempatan saat diterima -->
+@include('admin.modals.placement-modal')
 
 @endsection

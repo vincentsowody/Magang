@@ -56,7 +56,7 @@ class ApplicantController extends Controller
         ]);
     }
 
-    // ADMIN: Update Status & Lokasi — dengan notifikasi otomatis
+    // ADMIN: Update Status, Lokasi Spesifik, dan Masa Magang
     public function update(Request $request, string $id)
     {
         $applicant = Applicant::find($id);
@@ -64,18 +64,40 @@ class ApplicantController extends Controller
             return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
 
+        // Validasi form saat status yang dipilih adalah "accepted"
+        $rules = ['status' => 'required|string|in:pending,accepted,rejected'];
+        
+        if ($request->status === 'accepted') {
+            $rules['lokasi_penempatan'] = 'required|string|max:255';
+            $rules['tanggal_mulai']     = 'required|date';
+            $rules['tanggal_selesai']   = 'required|date|after_or_equal:tanggal_mulai';
+        }
+
+        $request->validate($rules);
+
         $oldStatus = $applicant->status;
         $newStatus = $request->status;
-        $location  = ($newStatus === 'accepted') ? $request->location : null;
 
-        $applicant->update([
-            'status'   => $newStatus,
-            'location' => $location,
-        ]);
+        // Persiapkan data yang akan diupdate
+        $dataToUpdate = ['status' => $newStatus];
+
+        if ($newStatus === 'accepted') {
+            $dataToUpdate['lokasi_penempatan'] = $request->lokasi_penempatan;
+            $dataToUpdate['tanggal_mulai']     = $request->tanggal_mulai;
+            $dataToUpdate['tanggal_selesai']   = $request->tanggal_selesai;
+        } else {
+            // Kosongkan data penempatan jika status diubah kembali ke pending/rejected
+            $dataToUpdate['lokasi_penempatan'] = null;
+            $dataToUpdate['tanggal_mulai']     = null;
+            $dataToUpdate['tanggal_selesai']   = null;
+        }
+
+        $applicant->update($dataToUpdate);
 
         // Kirim notifikasi ke peserta jika status berubah
         if ($oldStatus !== $newStatus) {
-            $this->sendStatusNotification($applicant, $newStatus, $location);
+            // Kita pass model applicant yang sudah terupdate agar data lokasi/tanggal bisa dibaca di notifikasi
+            $this->sendStatusNotification($applicant, $newStatus);
         }
 
         return response()->json(['message' => 'Update berhasil', 'data' => $applicant]);
@@ -109,20 +131,15 @@ class ApplicantController extends Controller
 
     // ── Private ──────────────────────────────────────────
 
-    private function sendStatusNotification(Applicant $applicant, string $status, ?string $location): void
+    private function sendStatusNotification(Applicant $applicant, string $status): void
     {
-        $locationLabel = match ($location) {
-            'kantor'   => 'Head Office (Kantor Pusat)',
-            'terminal' => 'Terminal Ops (Operasional Bandara)',
-            default    => null,
-        };
-
         $map = [
             'accepted' => [
                 'title'   => '🎉 Selamat! Anda Diterima',
-                'message' => "Selamat {$applicant->name}! Lamaran PKL Anda telah **diterima**."
-                    . ($locationLabel ? " Anda akan ditempatkan di **{$locationLabel}**." : '')
-                    . " Segera lengkapi dokumen persyaratan dan pantau info selanjutnya di portal ini.",
+                'message' => "Selamat {$applicant->name}! Lamaran PKL Anda telah **diterima**.\n"
+                    . ($applicant->lokasi_penempatan ? "Anda ditempatkan di divisi **{$applicant->lokasi_penempatan}**.\n" : '')
+                    . ($applicant->tanggal_mulai && $applicant->tanggal_selesai ? "Masa magang Anda akan berlangsung dari **" . date('d M Y', strtotime($applicant->tanggal_mulai)) . "** hingga **" . date('d M Y', strtotime($applicant->tanggal_selesai)) . "**.\n" : '')
+                    . "Segera lengkapi dokumen persyaratan dan pantau info selanjutnya di portal ini.",
             ],
             'rejected' => [
                 'title'   => 'Hasil Seleksi PKL',
@@ -143,9 +160,11 @@ class ApplicantController extends Controller
             'message'      => $notif['message'],
             'type'         => 'status_change',
             'meta'         => [
-                'old_status' => null,
-                'new_status' => $status,
-                'location'   => $location,
+                'old_status'        => null,
+                'new_status'        => $status,
+                'lokasi_penempatan' => $applicant->lokasi_penempatan,
+                'tanggal_mulai'     => $applicant->tanggal_mulai,
+                'tanggal_selesai'   => $applicant->tanggal_selesai,
             ],
         ]);
 
