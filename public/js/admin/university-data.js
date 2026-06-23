@@ -1,117 +1,138 @@
-            // ══════════════════════════════════════════════
-            //  UNIVERSITY & MAJOR DATA + DROPDOWN LOGIC
-            // ══════════════════════════════════════════════
-            const UNIVERSITY_DATA = {
-                // ── Pulau Jawa ──
-                "Universitas Indonesia (UI)": {
-                    icon: "🏛️", location: "Jakarta",
-                    majors: ["Teknik Informatika","Sistem Informasi","Ilmu Komputer","Teknik Elektro","Teknik Sipil","Teknik Mesin","Teknik Industri","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Ilmu Administrasi","Ekonomi","Hubungan Internasional","Sosiologi","Ilmu Politik","Sastra Inggris","Arsitektur"]
-                },
-                "Institut Teknologi Bandung (ITB)": {
-                    icon: "⚙️", location: "Bandung",
-                    majors: ["Teknik Informatika","Teknik Elektro","Teknik Sipil","Teknik Mesin","Teknik Industri","Teknik Kimia","Teknik Fisika","Matematika","Fisika","Kimia","Manajemen","Desain Komunikasi Visual","Arsitektur","Teknik Lingkungan","Teknik Penerbangan","Teknik Pertambangan","Teknik Geologi","Astronomi","Meteorologi","Desain Produk"]
-                },
-                "Universitas Gadjah Mada (UGM)": {
-                    icon: "🌿", location: "Yogyakarta",
-                    majors: ["Teknik Informatika","Sistem Informasi","Teknik Elektro","Teknik Sipil","Teknik Mesin","Manajemen","Akuntansi","Ekonomi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Farmasi","Ilmu Administrasi Negara","Sosiologi","Antropologi","Sastra Indonesia","Sastra Inggris","Hubungan Internasional","Geografi"]
-                },
-                "Institut Teknologi Sepuluh Nopember (ITS)": {
-                    icon: "🔬", location: "Surabaya",
-                    majors: ["Teknik Informatika","Sistem Informasi","Teknik Elektro","Teknik Sipil","Teknik Mesin","Teknik Industri","Teknik Kimia","Teknik Fisika","Matematika","Statistika","Teknik Kelautan","Teknik Perkapalan","Desain Produk Industri","Desain Interior","Teknik Lingkungan","Teknik Material","Fisika","Kimia","Manajemen Bisnis","Teknik Geomatika"]
-                },
-                "Universitas Brawijaya (UB)": {
-                    icon: "🌾", location: "Malang",
-                    majors: ["Teknik Informatika","Sistem Informasi","Teknik Elektro","Teknik Sipil","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Pertanian","Peternakan","Perikanan","Ilmu Administrasi","Sosiologi","Ilmu Politik","Ekonomi Pembangunan","Agribisnis","Teknologi Pangan","Teknik Industri"]
-                },
-                "Universitas Padjadjaran (UNPAD)": {
-                    icon: "🎓", location: "Bandung",
-                    majors: ["Teknik Informatika","Sistem Informasi","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Farmasi","Ilmu Administrasi","Sosiologi","Sastra Inggris","Hubungan Internasional","Ilmu Politik","Ekonomi","Matematika","Statistika","Biologi","Kimia","Fisika"]
-                },
-                "Universitas Diponegoro (UNDIP)": {
-                    icon: "⚓", location: "Semarang",
-                    majors: ["Teknik Informatika","Sistem Informasi","Teknik Elektro","Teknik Sipil","Teknik Mesin","Teknik Industri","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Ilmu Kelautan","Perikanan","Ilmu Administrasi","Hubungan Internasional","Ekonomi","Statistika","Arsitektur","Teknik Kimia"]
-                },
-                "Universitas Airlangga (UNAIR)": {
-                    icon: "🐊", location: "Surabaya",
-                    majors: ["Manajemen","Akuntansi","Ekonomi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Farmasi","Ilmu Administrasi","Sosiologi","Ilmu Politik","Sastra Inggris","Sistem Informasi","Teknologi Informasi","Kesehatan Masyarakat","Keperawatan","Ilmu Hubungan Internasional","Biologi","Kimia","Fisika"]
-                },
-                "Universitas Sebelas Maret (UNS)": {
-                    icon: "🏔️", location: "Solo",
-                    majors: ["Teknik Informatika","Teknik Elektro","Teknik Sipil","Teknik Mesin","Teknik Industri","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Pendidikan","Sastra Indonesia","Sastra Inggris","Ekonomi Pembangunan","Ilmu Administrasi","Sosiologi","Agribisnis","Arsitektur","Desain Komunikasi Visual"]
-                },
-                "Universitas Bina Nusantara (BINUS)": {
-                    icon: "💻", location: "Jakarta",
-                    majors: ["Teknik Informatika","Sistem Informasi","Ilmu Komputer","Teknik Elektro","Manajemen","Akuntansi","Ilmu Komunikasi","Desain Komunikasi Visual","Teknik Industri","Data Science","Cyber Security","Game Application and Technology","Mobile Application and Technology","Business Management","Marketing Communication","International Business","Film","Animasi","Interior Design","Entrepreneurship"]
-                },
-                "Telkom University": {
-                    icon: "📡", location: "Bandung",
-                    majors: ["Teknik Informatika","Sistem Informasi","Ilmu Komputer","Teknik Elektro","Teknik Telekomunikasi","Teknik Industri","Manajemen","Akuntansi","Ilmu Komunikasi","Desain Komunikasi Visual","Data Science","Rekayasa Perangkat Lunak","Teknik Komputer","Business Administration","Teknik Biomedis","Teknik Material","Administrasi Bisnis","Creative Arts","Teknik Logistik","Teknik Mesin"]
-                },
-                "Universitas Mercu Buana": {
-                    icon: "🏙️", location: "Jakarta",
-                    majors: ["Teknik Informatika","Sistem Informasi","Teknik Elektro","Teknik Sipil","Teknik Mesin","Teknik Industri","Manajemen","Akuntansi","Ilmu Komunikasi","Desain Produk","Arsitektur","Psikologi","Teknik Kimia","Periklanan","Broadcasting","Hubungan Masyarakat","Ilmu Administrasi","Teknik Lingkungan","Desain Interior","Ekonomi"]
-                },
-                // ── Luar Jawa ──
-                "Universitas Sam Ratulangi (UNSRAT)": {
-                    icon: "🌴", location: "Manado",
-                    majors: ["Teknik Informatika","Sistem Informasi","Teknik Elektro","Teknik Sipil","Teknik Mesin","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Pertanian","Perikanan","Ilmu Administrasi","Sosiologi","Matematika","Fisika","Biologi","Kimia","Keperawatan"]
-                },
-                "Politeknik Negeri Manado": {
-                    icon: "🔧", location: "Manado",
-                    majors: ["Teknik Informatika","Manajemen Informatika","Teknik Elektro","Teknik Sipil","Teknik Mesin","Akuntansi","Administrasi Bisnis","Teknik Listrik","Teknik Telekomunikasi","Komputerisasi Akuntansi"]
-                },
-                "Universitas Klabat": {
-                    icon: "🏫", location: "Manado",
-                    majors: ["Teknik Informatika","Sistem Informasi","Manajemen","Akuntansi","Ilmu Komunikasi","Hukum","Pendidikan","Teologi","Keperawatan","Bahasa Inggris"]
-                },
-                "Universitas De La Salle Manado": {
-                    icon: "✝️", location: "Manado",
-                    majors: ["Teknik Informatika","Sistem Informasi","Manajemen","Akuntansi","Teknik Sipil","Arsitektur","Farmasi","Keperawatan","Pendidikan","Hukum"]
-                },
-                "Universitas Hasanuddin (UNHAS)": {
-                    icon: "🌊", location: "Makassar",
-                    majors: ["Teknik Informatika","Teknik Elektro","Teknik Sipil","Teknik Mesin","Teknik Industri","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Kelautan","Perikanan","Pertanian","Kehutanan","Ilmu Administrasi","Sosiologi","Sastra Indonesia","Hubungan Internasional","Ekonomi"]
-                },
-                "Universitas Udayana (UNUD)": {
-                    icon: "🌺", location: "Bali",
-                    majors: ["Teknik Informatika","Sistem Informasi","Teknik Elektro","Teknik Sipil","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Pariwisata","Sastra","Pertanian","Peternakan","Keperawatan","Ilmu Administrasi","Sosiologi","Matematika","Fisika","Biologi"]
-                },
-                "Universitas Sumatera Utara (USU)": {
-                    icon: "🌳", location: "Medan",
-                    majors: ["Teknik Informatika","Teknik Elektro","Teknik Sipil","Teknik Mesin","Teknik Industri","Manajemen","Akuntansi","Ilmu Komunikasi","Psikologi","Hukum","Kedokteran","Farmasi","Pertanian","Kehutanan","Ilmu Administrasi","Sosiologi","Sastra Inggris","Ekonomi","Kesehatan Masyarakat","Keperawatan"]
-                },
-                "Universitas Sriwijaya (UNSRI)": {
-                    icon: "🏺", location: "Palembang",
-                    majors: ["Teknik Informatika","Teknik Elektro","Teknik Sipil","Teknik Kimia","Manajemen","Akuntansi","Ilmu Komunikasi","Hukum","Kedokteran","Pertanian","Ilmu Administrasi","Ekonomi","Matematika","Fisika","Kimia","Biologi","Keperawatan","Kesehatan Masyarakat","Pendidikan","Teknik Mesin"]
-                },
-                "Universitas Mulawarman (UNMUL)": {
-                    icon: "🌿", location: "Samarinda",
-                    majors: ["Teknik Informatika","Teknik Elektro","Teknik Sipil","Manajemen","Akuntansi","Ilmu Komunikasi","Hukum","Kedokteran","Pertanian","Kehutanan","Perikanan","Ilmu Administrasi","Ekonomi","Matematika","Biologi","Kimia","Keperawatan","Kesehatan Masyarakat","Fisika","Teknik Mesin"]
-                },
-            };
+// ══════════════════════════════════════════════
+//  UNIVERSITY & MAJOR DATA + DROPDOWN LOGIC
+// ══════════════════════════════════════════════
+const UNIVERSITY_DATA = {
+    // ── Pulau Jawa ──
+    "Universitas Indonesia (UI)": {
+        icon: "🏛️",
+        location: "Jakarta",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Ilmu Komputer", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Teknik Industri", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Ilmu Administrasi", "Ekonomi", "Hubungan Internasional", "Sosiologi", "Ilmu Politik", "Sastra Inggris", "Arsitektur"]
+    },
+    "Institut Teknologi Bandung (ITB)": {
+        icon: "⚙️",
+        location: "Bandung",
+        majors: ["Teknik Informatika", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Teknik Industri", "Teknik Kimia", "Teknik Fisika", "Matematika", "Fisika", "Kimia", "Manajemen", "Desain Komunikasi Visual", "Arsitektur", "Teknik Lingkungan", "Teknik Penerbangan", "Teknik Pertambangan", "Teknik Geologi", "Astronomi", "Meteorologi", "Desain Produk"]
+    },
+    "Universitas Gadjah Mada (UGM)": {
+        icon: "🌿",
+        location: "Yogyakarta",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Manajemen", "Akuntansi", "Ekonomi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Farmasi", "Ilmu Administrasi Negara", "Sosiologi", "Antropologi", "Sastra Indonesia", "Sastra Inggris", "Hubungan Internasional", "Geografi"]
+    },
+    "Institut Teknologi Sepuluh Nopember (ITS)": {
+        icon: "🔬",
+        location: "Surabaya",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Teknik Industri", "Teknik Kimia", "Teknik Fisika", "Matematika", "Statistika", "Teknik Kelautan", "Teknik Perkapalan", "Desain Produk Industri", "Desain Interior", "Teknik Lingkungan", "Teknik Material", "Fisika", "Kimia", "Manajemen Bisnis", "Teknik Geomatika"]
+    },
+    "Universitas Brawijaya (UB)": {
+        icon: "🌾",
+        location: "Malang",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Teknik Elektro", "Teknik Sipil", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Pertanian", "Peternakan", "Perikanan", "Ilmu Administrasi", "Sosiologi", "Ilmu Politik", "Ekonomi Pembangunan", "Agribisnis", "Teknologi Pangan", "Teknik Industri"]
+    },
+    "Universitas Padjadjaran (UNPAD)": {
+        icon: "🎓",
+        location: "Bandung",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Farmasi", "Ilmu Administrasi", "Sosiologi", "Sastra Inggris", "Hubungan Internasional", "Ilmu Politik", "Ekonomi", "Matematika", "Statistika", "Biologi", "Kimia", "Fisika"]
+    },
+    "Universitas Diponegoro (UNDIP)": {
+        icon: "⚓",
+        location: "Semarang",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Teknik Industri", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Ilmu Kelautan", "Perikanan", "Ilmu Administrasi", "Hubungan Internasional", "Ekonomi", "Statistika", "Arsitektur", "Teknik Kimia"]
+    },
+    "Universitas Airlangga (UNAIR)": {
+        icon: "🐊",
+        location: "Surabaya",
+        majors: ["Manajemen", "Akuntansi", "Ekonomi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Farmasi", "Ilmu Administrasi", "Sosiologi", "Ilmu Politik", "Sastra Inggris", "Sistem Informasi", "Teknologi Informasi", "Kesehatan Masyarakat", "Keperawatan", "Ilmu Hubungan Internasional", "Biologi", "Kimia", "Fisika"]
+    },
+    "Universitas Sebelas Maret (UNS)": {
+        icon: "🏔️",
+        location: "Solo",
+        majors: ["Teknik Informatika", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Teknik Industri", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Pendidikan", "Sastra Indonesia", "Sastra Inggris", "Ekonomi Pembangunan", "Ilmu Administrasi", "Sosiologi", "Agribisnis", "Arsitektur", "Desain Komunikasi Visual"]
+    },
+    "Universitas Bina Nusantara (BINUS)": {
+        icon: "💻",
+        location: "Jakarta",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Ilmu Komputer", "Teknik Elektro", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Desain Komunikasi Visual", "Teknik Industri", "Data Science", "Cyber Security", "Game Application and Technology", "Mobile Application and Technology", "Business Management", "Marketing Communication", "International Business", "Film", "Animasi", "Interior Design", "Entrepreneurship"]
+    },
+    "Telkom University": {
+        icon: "📡",
+        location: "Bandung",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Ilmu Komputer", "Teknik Elektro", "Teknik Telekomunikasi", "Teknik Industri", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Desain Komunikasi Visual", "Data Science", "Rekayasa Perangkat Lunak", "Teknik Komputer", "Business Administration", "Teknik Biomedis", "Teknik Material", "Administrasi Bisnis", "Creative Arts", "Teknik Logistik", "Teknik Mesin"]
+    },
+    "Universitas Mercu Buana": {
+        icon: "🏙️",
+        location: "Jakarta",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Teknik Industri", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Desain Produk", "Arsitektur", "Psikologi", "Teknik Kimia", "Periklanan", "Broadcasting", "Hubungan Masyarakat", "Ilmu Administrasi", "Teknik Lingkungan", "Desain Interior", "Ekonomi"]
+    },
+    // ── Luar Jawa ──
+    "Universitas Sam Ratulangi (UNSRAT)": {
+        icon: "🌴",
+        location: "Manado",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Pertanian", "Perikanan", "Ilmu Administrasi", "Sosiologi", "Matematika", "Fisika", "Biologi", "Kimia", "Keperawatan"]
+    },
+    "Politeknik Negeri Manado": {
+        icon: "🔧",
+        location: "Manado",
+        majors: ["Teknik Informatika", "Manajemen Informatika", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Akuntansi", "Administrasi Bisnis", "Teknik Listrik", "Teknik Telekomunikasi", "Komputerisasi Akuntansi"]
+    },
+    "Universitas Klabat": {
+        icon: "🏫",
+        location: "Manado",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Hukum", "Pendidikan", "Teologi", "Keperawatan", "Bahasa Inggris"]
+    },
+    "Universitas De La Salle Manado": {
+        icon: "✝️",
+        location: "Manado",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Manajemen", "Akuntansi", "Teknik Sipil", "Arsitektur", "Farmasi", "Keperawatan", "Pendidikan", "Hukum"]
+    },
+    "Universitas Hasanuddin (UNHAS)": {
+        icon: "🌊",
+        location: "Makassar",
+        majors: ["Teknik Informatika", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Teknik Industri", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Kelautan", "Perikanan", "Pertanian", "Kehutanan", "Ilmu Administrasi", "Sosiologi", "Sastra Indonesia", "Hubungan Internasional", "Ekonomi"]
+    },
+    "Universitas Udayana (UNUD)": {
+        icon: "🌺",
+        location: "Bali",
+        majors: ["Teknik Informatika", "Sistem Informasi", "Teknik Elektro", "Teknik Sipil", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Pariwisata", "Sastra", "Pertanian", "Peternakan", "Keperawatan", "Ilmu Administrasi", "Sosiologi", "Matematika", "Fisika", "Biologi"]
+    },
+    "Universitas Sumatera Utara (USU)": {
+        icon: "🌳",
+        location: "Medan",
+        majors: ["Teknik Informatika", "Teknik Elektro", "Teknik Sipil", "Teknik Mesin", "Teknik Industri", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Psikologi", "Hukum", "Kedokteran", "Farmasi", "Pertanian", "Kehutanan", "Ilmu Administrasi", "Sosiologi", "Sastra Inggris", "Ekonomi", "Kesehatan Masyarakat", "Keperawatan"]
+    },
+    "Universitas Sriwijaya (UNSRI)": {
+        icon: "🏺",
+        location: "Palembang",
+        majors: ["Teknik Informatika", "Teknik Elektro", "Teknik Sipil", "Teknik Kimia", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Hukum", "Kedokteran", "Pertanian", "Ilmu Administrasi", "Ekonomi", "Matematika", "Fisika", "Kimia", "Biologi", "Keperawatan", "Kesehatan Masyarakat", "Pendidikan", "Teknik Mesin"]
+    },
+    "Universitas Mulawarman (UNMUL)": {
+        icon: "🌿",
+        location: "Samarinda",
+        majors: ["Teknik Informatika", "Teknik Elektro", "Teknik Sipil", "Manajemen", "Akuntansi", "Ilmu Komunikasi", "Hukum", "Kedokteran", "Pertanian", "Kehutanan", "Perikanan", "Ilmu Administrasi", "Ekonomi", "Matematika", "Biologi", "Kimia", "Keperawatan", "Kesehatan Masyarakat", "Fisika", "Teknik Mesin"]
+    },
+};
 
-            let selectedUniv = null;
-            let univDropdownOpen = false;
-            let majorDropdownOpen = false;
+let selectedUniv = null;
+let univDropdownOpen = false;
+let majorDropdownOpen = false;
 
-            // ── BUILD UNIV LIST ──
-            function buildUnivList(filter = '') {
-                const list = document.getElementById('univ-list');
-                list.innerHTML = '';
-                const keys = Object.keys(UNIVERSITY_DATA).filter(u =>
-                    u.toLowerCase().includes(filter.toLowerCase()) ||
-                    UNIVERSITY_DATA[u].location.toLowerCase().includes(filter.toLowerCase())
-                );
-                if (!keys.length) {
-                    list.innerHTML = `<div style="padding:16px;text-align:center;font-size:12px;color:rgba(100,116,139,0.5)">Tidak ditemukan</div>`;
-                    return;
-                }
-                keys.forEach(univ => {
-                    const d = UNIVERSITY_DATA[univ];
-                    const isSelected = selectedUniv === univ;
-                    const item = document.createElement('div');
-                    item.style.cssText = `padding:9px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;${isSelected?'background:rgba(0,185,232,0.1);':''}`;
-                    item.innerHTML = `
+// ── BUILD UNIV LIST ──
+function buildUnivList(filter = '') {
+    const list = document.getElementById('univ-list');
+    list.innerHTML = '';
+    const keys = Object.keys(UNIVERSITY_DATA).filter(u =>
+        u.toLowerCase().includes(filter.toLowerCase()) ||
+        UNIVERSITY_DATA[u].location.toLowerCase().includes(filter.toLowerCase())
+    );
+    if (!keys.length) {
+        list.innerHTML = `<div style="padding:16px;text-align:center;font-size:12px;color:rgba(100,116,139,0.5)">Tidak ditemukan</div>`;
+        return;
+    }
+    keys.forEach(univ => {
+                const d = UNIVERSITY_DATA[univ];
+                const isSelected = selectedUniv === univ;
+                const item = document.createElement('div');
+                item.style.cssText = `padding:9px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;${isSelected?'background:rgba(0,185,232,0.1);':''}`;
+                item.innerHTML = `
                         <span style="font-size:16px;flex-shrink:0">${d.icon}</span>
                         <div style="flex:1;min-width:0">
                             <div style="font-size:12px;font-weight:600;color:${isSelected?'#00b9e8':'#e2e8f0'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${univ}</div>
@@ -225,8 +246,10 @@
 
             // Close dropdowns when clicking outside
             document.addEventListener('click', (e) => {
-                if (!document.getElementById('univ-dropdown-wrap')?.contains(e.target)) closeUnivDropdown();
-                if (!document.getElementById('major-dropdown-wrap')?.contains(e.target)) closeMajorDropdown();
+                const univWrap = document.getElementById('univ-dropdown-wrap');
+                const majorWrap = document.getElementById('major-dropdown-wrap');
+                if (!univWrap || !univWrap.contains(e.target)) closeUnivDropdown();
+                if (!majorWrap || !majorWrap.contains(e.target)) closeMajorDropdown();
             });
 
 // Catatan refactor: dua blok di bawah ini awalnya tercecer di lokasi

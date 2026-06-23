@@ -61,6 +61,12 @@
         <span class="info-val">{{ $applicant->location === 'kantor' ? 'Head Office' : 'Terminal Ops' }}</span>
       </div>
       @endif
+      @if($applicant->internship_start && $applicant->internship_end)
+      <div class="info-row">
+        <span class="info-label">Masa Magang</span>
+        <span class="info-val">{{ $applicant->internship_start->translatedFormat('d M Y') }} – {{ $applicant->internship_end->translatedFormat('d M Y') }}</span>
+      </div>
+      @endif
     </div>
     <a href="{{ url('/') }}" class="btn">Buka Portal PKL →</a>
   </div>

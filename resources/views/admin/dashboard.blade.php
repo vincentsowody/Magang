@@ -23,5 +23,4 @@
 @include('admin.modals.review-modal')
 <!-- Form tambahan untuk penempatan saat diterima -->
 @include('admin.modals.placement-modal')
-
-@endsection
+@include('admin.modals.import-modal')

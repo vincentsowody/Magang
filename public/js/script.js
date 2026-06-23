@@ -3,8 +3,8 @@
 //  Client-side logic (script.js)
 // ─────────────────────────────────────────
 
-const API_CHECK_STATUS_URL = 'http://127.0.0.1:8000/api/check-status';
-const LOGO_URL = '/img/logo.png';
+const API_CHECK_STATUS_URL = '/api/check-status';
+const LOGO_URL = '/img/logo-injounery.png';
 
 let currentUser = null;
 
@@ -108,8 +108,8 @@ function buildDocList(location) {
 function handleDocDownload(docId) {
 
     const allDocs = [
-        ...(window.PORTAL_DOCS ? .kantor || []),
-        ...(window.PORTAL_DOCS ? .terminal || [])
+        ...((window.PORTAL_DOCS && window.PORTAL_DOCS.kantor) || []),
+        ...((window.PORTAL_DOCS && window.PORTAL_DOCS.terminal) || [])
     ];
 
     const doc = allDocs.find(d => d.id === docId);
@@ -124,12 +124,9 @@ function handleDocDownload(docId) {
     }
 
     window.open(
-        'http://127.0.0.1:8000' + doc.url,
+        doc.url,
         '_blank'
     );
-}
-// Fallback: show info
-showNotification('Mengunduh', name + ' (' + type + ')', 'info');
 }
 
 // ── VIEW TEMPLATES ───────────────────────────
@@ -319,14 +316,14 @@ async function handleLogin(event) {
     event.preventDefault();
     const code = document.getElementById('login-code').value.toUpperCase().trim();
     const btn = document.getElementById('btn-checkin');
-    const text = document.getElementById('checkin-text');
-    const icon = document.getElementById('checkin-icon');
+    const text = document.querySelector('.checkin-text');
+    const icon = document.querySelector('.checkin-icon');
 
     // Loading state
     btn.disabled = true;
     btn.style.opacity = '0.8';
     text.textContent = 'Memeriksa...';
-    icon.outerHTML = `<svg id="checkin-icon" class="spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
+    icon.outerHTML = `<svg class="checkin-icon spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
 
     try {
         const response = await fetch(API_CHECK_STATUS_URL, {
@@ -356,8 +353,8 @@ function resetLoginBtn() {
     if (!btn) return;
     btn.disabled = false;
     btn.style.opacity = '1';
-    btn.innerHTML = `<span id="checkin-text">CHECK STATUS SAYA</span>
-    <svg id="checkin-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+    btn.innerHTML = `<span class="checkin-text">CHECK STATUS SAYA</span>
+    <svg class="checkin-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
 }
 
 // ── INIT ────────────────────────────────────
@@ -373,7 +370,7 @@ async function loadPortalDocuments() {
     try {
 
         const response = await fetch(
-            'http://127.0.0.1:8000/api/admin/documents'
+            '/api/admin/documents'
         );
 
         const result = await response.json();

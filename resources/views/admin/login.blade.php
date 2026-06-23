@@ -6,120 +6,136 @@
     <title>HRD Login — InJourney Airports</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('css/admin/login.css') }}">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .animate-fade-in { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 
     <script>
-        window.APP_CONFIG = {
-            dashboardUrl: "{{ url('admin/dashboard') }}",
-        };
+    window.APP_CONFIG = {
+        dashboardUrl: "{{ url('admin/dashboard') }}",
+        apiUrl: "{{ url('api') }}"
+    };
+    
+    const API = "{{ url('api') }}";
     </script>
 </head>
-<body>
+<body class="bg-slate-200 text-slate-800 font-sans min-h-screen flex flex-col items-center justify-center antialiased relative overflow-hidden">
 
-    <!-- Background Layers -->
-    <div class="radar-bg"></div>
-    <div class="grid-lines"></div>
-
-    <!-- Decorative radar rings -->
-    <div class="radar-ring" style="width:600px;height:600px;bottom:-200px;left:-200px;"></div>
-    <div class="radar-ring" style="width:900px;height:900px;bottom:-350px;left:-350px;"></div>
-    <div class="radar-ring" style="width:300px;height:300px;top:-80px;right:80px;"></div>
-
-    <!-- Plane flyby -->
-    <div class="plane-flyby top-[30%]">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+    <div class="fixed inset-0 pointer-events-none z-0 opacity-40" 
+         style="background-image: radial-gradient(#94a3b8 1.5px, transparent 1.5px); background-size: 24px 24px;">
     </div>
-    <div class="plane-flyby top-[55%]" style="animation-delay:-7s;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
-    </div>
+    <div class="fixed inset-0 pointer-events-none z-0 bg-gradient-to-tr from-cyan-500/10 via-transparent to-amber-500/10"></div>
 
-    <!-- Login Container -->
-    <div class="relative z-10 h-screen flex items-center justify-center px-4">
-        <div class="w-full max-w-[400px]">
+    <div class="relative z-10 w-full max-w-md px-4 sm:px-0 flex flex-col items-center animate-fade-in">
+        
+        <img src="{{ asset('img/logo-injourney.png') }}" alt="InJourney Airports" 
+             class="h-20 md:h-24 object-contain mix-blend-multiply mb-8 drop-shadow-sm"
+             onerror="this.outerHTML='<div class=\\'text-4xl font-black text-slate-800 tracking-tighter mb-8\\'>HRD<span class=\\'text-cyan-600\\'>SYSTEM</span></div>'">
 
-            <!-- Logo & Header -->
-            <div class="text-center mb-8 fade-up">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl border border-white/10 bg-white/05 mb-5" style="background:rgba(0,185,232,0.08);">
-                    <img src="{{ asset('img/logo.png') }}"
-                         onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
-                         alt="InJourney" class="h-7 brightness-0 invert">
-                    <svg xmlns="http://www.w3.org/2000/svg" style="display:none" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00b9e8" stroke-width="2"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+        <div class="w-full bg-white border-[3px] border-slate-200 rounded-[2.5rem] p-8 sm:p-10 shadow-[8px_16px_0px_rgba(15,23,42,0.05)] relative overflow-hidden">
+            
+            <div class="flex items-center justify-between mb-8 pb-5 border-b-2 border-slate-100">
+                <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[10px] font-black text-emerald-700 uppercase tracking-widest">System Live</span>
                 </div>
-                <h1 class="text-2xl font-bold text-white tracking-tight">Human Capital System</h1>
-                <p class="text-slate-400 text-sm mt-1.5">InJourney Airports · Recruitment Portal</p>
+                <span class="text-xs font-mono font-bold text-slate-400" id="auth-clock">--:--:--</span>
             </div>
 
-            <!-- Card -->
-            <div class="login-card p-8 fade-up delay-1" id="login-card">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Human Capital System</h1>
+                <p class="text-xs font-bold text-slate-500 mt-2 uppercase tracking-widest">Administrator Portal</p>
+            </div>
 
-                <!-- Live status bar -->
-                <div class="flex items-center justify-between mb-7 pb-6 border-b border-white/06" style="border-color:rgba(255,255,255,0.06)">
-                    <div class="flex items-center gap-2.5">
-                        <div class="status-dot"></div>
-                        <span class="text-xs text-slate-400 font-medium">System Live</span>
+            <div id="error-alert" style="display: none;" class="mb-6 bg-rose-50 border-2 border-rose-200 rounded-xl p-4 flex items-start gap-3">
+                <i data-lucide="alert-circle" class="w-5 h-5 text-rose-500 shrink-0"></i>
+                <span class="text-xs font-bold text-rose-600 mt-0.5">Kredensial tidak valid. Silakan periksa kembali ID Pegawai dan Password Anda.</span>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-5" autocomplete="off">
+                
+                <div>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">ID Pegawai</label>
+                    <div class="relative group">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-cyan-600 transition-colors">
+                            <i data-lucide="badge-check" class="w-5 h-5"></i>
+                        </span>
+                        <input type="text" id="username" required placeholder="Contoh: INJ-89012" autocomplete="off"
+                            class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-bold text-slate-800 placeholder-slate-300 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all shadow-inner">
                     </div>
-                    <span class="text-xs font-mono text-slate-500" id="auth-clock">--:--</span>
                 </div>
 
-                <!-- Error Box -->
-                <div class="error-box mb-5" id="error-alert">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    <span>Kredensial tidak valid. Coba lagi.</span>
-                </div>
-
-                <form onsubmit="handleAdminLogin(event)" class="space-y-5" autocomplete="off">
-                    <!-- Username -->
-                    <div class="fade-up delay-2">
-                        <label class="field-label">ID Pegawai</label>
-                        <div class="field-wrap">
-                            <svg class="field-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            <input type="text" id="username" required placeholder="Masukkan ID Pegawai" autocomplete="off">
-                        </div>
-                    </div>
-
-                    <!-- Password -->
-                    <div class="fade-up delay-3">
-                        <label class="field-label">Password</label>
-                        <div class="field-wrap" style="padding-right: 48px;">
-                            <svg class="field-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            <input type="password" id="password" required placeholder="••••••••" style="padding-right:48px;">
-                            <button type="button" onclick="togglePwd()" class="absolute right-14px top-0 bottom-0 flex items-center pr-4 text-slate-500 hover:text-slate-300 transition-colors" style="right:0">
-                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Remember -->
-                    <div class="flex items-center justify-between fade-up delay-3">
-                        <label class="flex items-center gap-2.5 cursor-pointer group">
-                            <div class="w-4 h-4 rounded border border-white/15 flex items-center justify-center" style="background:rgba(255,255,255,0.04)">
-                                <input type="checkbox" class="sr-only peer" id="remember">
-                                <svg class="hidden peer-checked:block w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                            </div>
-                            <span class="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">Ingat saya</span>
-                        </label>
-                        <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300 font-medium transition-colors">Lupa password?</a>
-                    </div>
-
-                    <!-- Submit -->
-                    <div class="pt-2 fade-up delay-4">
-                        <button type="submit" class="btn-login" id="btn-login">
-                            <span id="btn-text">Masuk Dashboard</span>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Password</label>
+                    <div class="relative group">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-cyan-600 transition-colors">
+                            <i data-lucide="lock-keyhole" class="w-5 h-5"></i>
+                        </span>
+                        <input type="password" id="password" required placeholder="••••••••"
+                            class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl pl-12 pr-12 py-3.5 text-sm font-bold text-slate-800 placeholder-slate-300 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all shadow-inner">
+                        <button type="button" onclick="togglePwd()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-600 transition-colors">
+                            <i id="eye-icon" data-lucide="eye" class="w-5 h-5"></i>
                         </button>
                     </div>
-                </form>
+                </div>
 
-                <!-- Footer -->
-                <p class="text-center text-xs text-slate-600 mt-7 pt-6" style="border-top:1px solid rgba(255,255,255,0.05)">
-                    © 2025 PT Angkasa Pura Indonesia · Authorized Personnel Only
+                <div class="flex items-center justify-between pt-2 pb-2">
+                    <label class="flex items-center gap-2.5 cursor-pointer group">
+                        <div class="relative flex items-center justify-center w-5 h-5">
+                            <input type="checkbox" id="remember" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded bg-slate-50 checked:bg-cyan-600 checked:border-cyan-600 transition-all cursor-pointer">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-white absolute pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500 group-hover:text-slate-800 transition-colors">Ingat Sesi Saya</span>
+                    </label>
+                    <a href="#" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 transition-colors">Lupa Password?</a>
+                </div>
+
+                <button type="submit" id="btn-login" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-black text-sm py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-[4px_4px_0px_rgba(0,0,0,0.2)] active:translate-y-1 active:shadow-none border-2 border-slate-800 mt-2">
+                    <span id="btn-text">Login</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t-2 border-slate-100 text-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    © 2026 PT Angkasa Pura Indonesia<br>Authorized Personnel Only
                 </p>
             </div>
-
         </div>
     </div>
 
-    <script src="{{ asset('js/admin/login.js') }}"></script>
+    <script>
+        lucide.createIcons();
+
+        function tickClock() {
+            const el = document.getElementById('auth-clock');
+            if (el) el.textContent = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(tickClock, 1000); tickClock();
+
+        function togglePwd() {
+            const pwdInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+    </script>
+
+    <script src="{{ asset('js/admin/login.js') }}?v={{ time() }}"></script>
 </body>
 </html>

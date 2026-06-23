@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Applicant;
 use App\Models\ApplicantNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 
 class ApplicantController extends Controller
 {
@@ -21,31 +18,19 @@ class ApplicantController extends Controller
     // ADMIN: Tambah Peserta Baru
     public function store(Request $request)
     {
-        // nim & major: required untuk input manual, nullable jika dari import (_incomplete flag)
-        $isImport = $request->boolean('_incomplete');
-        $validated = $request->validate([
-            'name'  => 'required|string|max:150',
-            'nim'   => ($isImport ? 'nullable' : 'required') . '|string|max:50',
-            'email' => 'nullable|email|max:150',
-            'phone' => 'nullable|string|max:20',
-            'univ'  => 'required|string|max:150',
-            'major' => ($isImport ? 'nullable' : 'required') . '|string|max:100',
-        ]);
+        $lastId = Applicant::max('id') ?? 0;
+        $code   = 'MAG-2025-' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
 
-        // Simpan dulu tanpa code, lalu generate code dari ID aktual (agar unik saat import massal)
         $applicant = Applicant::create([
-            'name'   => $validated['name'],
-            'nim'    => $validated['nim'] ?? null,
-            'email'  => $validated['email'] ?? null,
-            'phone'  => $validated['phone'] ?? null,
-            'univ'   => $validated['univ'],
-            'major'  => $validated['major'] ?? null,
-            'code'   => 'TEMP',
+            'name'   => $request->name,
+            'nim'    => $request->nim,
+            'email'  => $request->email,
+            'phone'  => $request->phone,
+            'univ'   => $request->univ,
+            'major'  => $request->major,
+            'code'   => $code,
             'status' => 'pending',
         ]);
-
-        $code = 'MAG-2025-' . str_pad($applicant->id, 3, '0', STR_PAD_LEFT);
-        $applicant->update(['code' => $code]);
 
         // Notifikasi selamat datang
         ApplicantNotification::create([
@@ -72,66 +57,24 @@ class ApplicantController extends Controller
 
         $oldStatus = $applicant->status;
         $newStatus = $request->status;
+        $location  = ($newStatus === 'accepted') ? $request->location : null;
 
-        $location        = null;
-        $internshipStart = null;
-        $internshipEnd   = null;
+        $updateData = [
+            'status'             => $newStatus,
+            'location'           => $location,
+            'lokasi_penempatan'  => $request->lokasi_penempatan,
+            'internship_start'   => $request->internship_start,
+            'internship_end'     => $request->internship_end,
+        ];
 
-        if ($newStatus === 'accepted') {
-            $validated = $request->validate([
-                'location'         => 'required|in:kantor,terminal',
-                'internship_start' => 'required|date',
-                'internship_end'   => 'required|date|after:internship_start',
-            ], [
-                'location.required'         => 'Lokasi penempatan wajib dipilih.',
-                'internship_start.required' => 'Tanggal mulai magang wajib diisi.',
-                'internship_end.required'   => 'Tanggal selesai magang wajib diisi.',
-                'internship_end.after'      => 'Tanggal selesai harus setelah tanggal mulai.',
-            ]);
-
-            $location        = $validated['location'];
-            $internshipStart = $validated['internship_start'];
-            $internshipEnd   = $validated['internship_end'];
-        }
-
-        $applicant->update([
-            'status'            => $newStatus,
-            'location'          => $location,
-            'lokasi_penempatan' => $request->lokasi_penempatan,
-            'internship_start'  => $internshipStart,
-            'internship_end'    => $internshipEnd,
-        ]);
+        $applicant->update($updateData);
 
         // Kirim notifikasi ke peserta jika status berubah
         if ($oldStatus !== $newStatus) {
-            $this->sendStatusNotification($applicant, $newStatus, $location, $internshipStart, $internshipEnd);
+            $this->sendStatusNotification($applicant, $newStatus, $location, $request->internship_start, $request->internship_end);
         }
 
         return response()->json(['message' => 'Update berhasil', 'data' => $applicant]);
-    }
-
-    // ADMIN: Hapus Data
-    public function destroy(string $id)
-    {
-        $applicant = Applicant::find($id);
-        if ($applicant) $applicant->delete();
-        return response()->json(['message' => 'Data dihapus']);
-    }
-
-    // ADMIN: Hapus Banyak Data Sekaligus
-    public function bulkDestroy(Request $request)
-    {
-        $request->validate([
-            'ids'   => 'required|array|min:1',
-            'ids.*' => 'integer|exists:applicants,id',
-        ]);
-
-        $deleted = Applicant::whereIn('id', $request->ids)->delete();
-
-        return response()->json([
-            'message' => "{$deleted} data berhasil dihapus.",
-            'deleted' => $deleted,
-        ]);
     }
 
     // ADMIN: Upload Surat Balasan
@@ -147,8 +90,8 @@ class ApplicantController extends Controller
         ]);
 
         // Hapus file lama jika ada
-        if ($applicant->reply_letter_path && Storage::disk('public')->exists($applicant->reply_letter_path)) {
-            Storage::disk('public')->delete($applicant->reply_letter_path);
+        if ($applicant->reply_letter_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($applicant->reply_letter_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($applicant->reply_letter_path);
         }
 
         $file     = $request->file('reply_letter');
@@ -185,10 +128,18 @@ class ApplicantController extends Controller
         }
 
         return response()->json([
-            'url'         => asset('storage/' . $applicant->reply_letter_path),
+            'url'         => \Illuminate\Support\Facades\Storage::disk('public')->url($applicant->reply_letter_path),
             'file_name'   => $applicant->reply_letter_name,
             'uploaded_at' => $applicant->reply_letter_uploaded_at,
         ]);
+    }
+
+    // ADMIN: Hapus Data
+    public function destroy(string $id)
+    {
+        $applicant = Applicant::find($id);
+        if ($applicant) $applicant->delete();
+        return response()->json(['message' => 'Data dihapus']);
     }
 
     // CLIENT: Cek Login Peserta
@@ -205,31 +156,13 @@ class ApplicantController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data'   => [
-                'id'                => $applicant->id,
-                'name'              => $applicant->name,
-                'nim'               => $applicant->nim,
-                'code'              => $applicant->code,
-                'univ'              => $applicant->univ,
-                'major'             => $applicant->major,
-                'status'            => $applicant->status,
-                'location'          => $applicant->location,
-                'lokasi_penempatan' => $applicant->lokasi_penempatan,
-                'internship_start'  => $applicant->internship_start
-                                        ? $applicant->internship_start->format('Y-m-d') : null,
-                'internship_end'    => $applicant->internship_end
-                                        ? $applicant->internship_end->format('Y-m-d') : null,
-                'reply_letter_url'  => $applicant->reply_letter_path
-                                        ? '/storage/' . $applicant->reply_letter_path : null,
-                'reply_letter_name' => $applicant->reply_letter_name,
-                'unread_count'      => $unread,
-            ],
+            'data'   => array_merge($applicant->toArray(), ['unread_count' => $unread]),
         ]);
     }
 
     // ── Private ──────────────────────────────────────────
 
-    private function sendStatusNotification(Applicant $applicant, string $status, ?string $location, ?string $internshipStart = null, ?string $internshipEnd = null): void
+    private function sendStatusNotification(Applicant $applicant, string $status, ?string $location, ?string $startDate = null, ?string $endDate = null): void
     {
         $locationLabel = match ($location) {
             'kantor'   => 'Head Office (Kantor Pusat)',
@@ -237,19 +170,12 @@ class ApplicantController extends Controller
             default    => null,
         };
 
-        $periodLabel = null;
-        if ($internshipStart && $internshipEnd) {
-            $start = \Carbon\Carbon::parse($internshipStart)->translatedFormat('d F Y');
-            $end   = \Carbon\Carbon::parse($internshipEnd)->translatedFormat('d F Y');
-            $periodLabel = "{$start} s/d {$end}";
-        }
-
         $map = [
             'accepted' => [
                 'title'   => '🎉 Selamat! Anda Diterima',
                 'message' => "Selamat {$applicant->name}! Lamaran PKL Anda telah **diterima**."
                     . ($locationLabel ? " Anda akan ditempatkan di **{$locationLabel}**." : '')
-                    . ($periodLabel ? " Masa magang Anda berlangsung dari **{$periodLabel}**." : '')
+                    . ($startDate && $endDate ? " Masa magang: " . \Carbon\Carbon::parse($startDate)->format('d M Y') . " s/d " . \Carbon\Carbon::parse($endDate)->format('d M Y') . "." : '')
                     . " Segera lengkapi dokumen persyaratan dan pantau info selanjutnya di portal ini.",
             ],
             'rejected' => [
@@ -271,11 +197,9 @@ class ApplicantController extends Controller
             'message'      => $notif['message'],
             'type'         => 'status_change',
             'meta'         => [
-                'old_status'       => null,
-                'new_status'       => $status,
-                'location'         => $location,
-                'internship_start' => $internshipStart,
-                'internship_end'   => $internshipEnd,
+                'old_status' => null,
+                'new_status' => $status,
+                'location'   => $location,
             ],
         ]);
 
@@ -288,7 +212,7 @@ class ApplicantController extends Controller
     private function sendEmailNotification(Applicant $applicant, string $title, string $message): void
     {
         try {
-            Mail::send(
+            \Illuminate\Support\Facades\Mail::send(
                 'emails.status-notification',
                 ['applicant' => $applicant, 'title' => $title, 'message' => $message],
                 fn($m) => $m
@@ -296,7 +220,7 @@ class ApplicantController extends Controller
                     ->subject("[InJourney PKL] {$title}")
             );
         } catch (\Throwable $e) {
-            Log::warning('Email notif gagal: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('Email notif gagal: ' . $e->getMessage());
         }
     }
 }

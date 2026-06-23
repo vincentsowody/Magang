@@ -3,7 +3,7 @@
 //  Fetch dokumen peserta dari API, approve / reject
 // ══════════════════════════════════════════════
 
-let reviewCandidateId = null;   // applicant.id yang sedang direview
+let reviewCandidateId = null; // applicant.id yang sedang direview
 
 // ── BUKA MODAL ───────────────────────────────────────────
 async function openDocReviewModal(candidateId) {
@@ -37,7 +37,7 @@ function closeDocReviewModal() {
 // ── FETCH DOKUMEN DARI API ────────────────────────────────
 async function fetchAndRenderDocs(candidateId) {
     try {
-        const res  = await fetch(`${API_BASE_URL}/admin/applicants/${candidateId}/documents`);
+        const res = await fetch(`${API_BASE_URL}/admin/applicants/${candidateId}/documents`);
         if (!res.ok) throw new Error('Gagal mengambil dokumen (HTTP ' + res.status + ')');
         const data = await res.json();
         renderDocReviewList(candidateId, data.data || []);
@@ -51,7 +51,7 @@ async function fetchAndRenderDocs(candidateId) {
 
 // ── RENDER DAFTAR DOKUMEN ─────────────────────────────────
 function renderDocReviewList(candidateId, docs) {
-    const list  = document.getElementById('doc-review-list');
+    const list = document.getElementById('doc-review-list');
     const empty = document.getElementById('doc-review-empty');
 
     if (!docs.length) {
@@ -63,18 +63,18 @@ function renderDocReviewList(candidateId, docs) {
 
     const mimeIcon = mime => {
         if (!mime) return { icon: 'file', bg: 'rgba(100,116,139,.12)', color: 'var(--text-muted)' };
-        if (mime.includes('pdf'))   return { icon: 'file-text',        bg: 'rgba(239,68,68,.12)',    color: 'var(--red)' };
-        if (mime.includes('image')) return { icon: 'image',            bg: 'rgba(139,92,246,.12)',   color: 'var(--purple)' };
+        if (mime.includes('pdf')) return { icon: 'file-text', bg: 'rgba(239,68,68,.12)', color: 'var(--red)' };
+        if (mime.includes('image')) return { icon: 'image', bg: 'rgba(139,92,246,.12)', color: 'var(--purple)' };
         if (mime.includes('word') || mime.includes('doc'))
-                                    return { icon: 'file-text',        bg: 'rgba(59,130,246,.12)',   color: 'var(--accent)' };
+            return { icon: 'file-text', bg: 'rgba(59,130,246,.12)', color: 'var(--accent)' };
         if (mime.includes('sheet') || mime.includes('excel'))
-                                    return { icon: 'file-spreadsheet', bg: 'rgba(34,197,94,.12)',    color: 'var(--green)' };
+            return { icon: 'file-spreadsheet', bg: 'rgba(34,197,94,.12)', color: 'var(--green)' };
         return { icon: 'file', bg: 'rgba(100,116,139,.12)', color: 'var(--text-muted)' };
     };
 
     const statusBadge = status => {
         const map = {
-            pending:  `<span class="badge b-pending"  style="font-size:10px"><span class="badge-dot"></span>Menunggu Review</span>`,
+            pending: `<span class="badge b-pending"  style="font-size:10px"><span class="badge-dot"></span>Menunggu Review</span>`,
             approved: `<span class="badge b-accepted" style="font-size:10px">✓ Disetujui</span>`,
             rejected: `<span class="badge b-rejected" style="font-size:10px">✕ Ditolak</span>`,
         };
@@ -82,9 +82,9 @@ function renderDocReviewList(candidateId, docs) {
     };
 
     list.innerHTML = docs.map(doc => {
-        const ic = mimeIcon(doc.mime_type);
-        const isDecided = doc.status === 'approved' || doc.status === 'rejected';
-        return `
+                const ic = mimeIcon(doc.mime_type);
+                const isDecided = doc.status === 'approved' || doc.status === 'rejected';
+                return `
         <div class="panel" style="padding:14px;margin-bottom:2px" id="doc-card-${doc.id}">
             <!-- Header baris -->
             <div style="display:flex;align-items:center;gap:10px">
@@ -176,7 +176,7 @@ async function resetDocStatus(candidateId, docId) {
 async function verifyDoc(candidateId, docId, status, notes) {
     // Disable semua tombol di card ini sementara
     const card = document.getElementById(`doc-card-${docId}`);
-    card?.querySelectorAll('button, a').forEach(el => el.style.pointerEvents = 'none');
+    (card ? card.querySelectorAll('button, a') : []).forEach(el => el.style.pointerEvents = 'none');
 
     try {
         const res = await fetch(`${API_BASE_URL}/admin/documents/${docId}/verify`, {
@@ -198,7 +198,7 @@ async function verifyDoc(candidateId, docId, status, notes) {
 
     } catch (e) {
         showToast('Gagal', e.message, 'error');
-        card?.querySelectorAll('button, a').forEach(el => el.style.pointerEvents = '');
+        (card ? card.querySelectorAll('button, a') : []).forEach(el => el.style.pointerEvents = '');
     }
 }
 

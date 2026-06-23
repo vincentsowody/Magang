@@ -18,7 +18,7 @@
                             </div>
                             <div>
                                 <label class="form-label">NIM</label>
-                                <input type="text" id="reg-nim" required class="form-input" placeholder="Nomor Induk Mahasiswa" style="font-family:'DM Mono',monospace">
+                                <input type="text" id="reg-nim" required class="form-input" placeholder="NIM atau NIS" style="font-family:'DM Mono',monospace">
                             </div>
                             <!-- University searchable dropdown -->
                             <div>
@@ -38,7 +38,7 @@
                                         <div style="padding:10px 10px 6px;border-bottom:1px solid rgba(255,255,255,0.06)">
                                             <div style="position:relative">
                                                 <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:rgba(100,116,139,0.5)" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                                <input id="univ-search" type="text" placeholder="Cari universitas..." oninput="filterUnivList()"
+                                                <input id="univ-search" type="text" placeholder="Cari universitas/instansi..." oninput="filterUnivList()"
                                                     style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;
                                                             padding:8px 10px 8px 32px;font-size:12px;color:#e2e8f0;outline:none;font-family:'DM Sans',sans-serif">
                                             </div>
@@ -55,7 +55,7 @@
                                 <div style="position:relative" id="major-dropdown-wrap">
                                     <div class="form-input" id="major-display" onclick="toggleMajorDropdown()"
                                         style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none">
-                                        <span id="major-display-text" style="color:rgba(100,116,139,0.5)">Pilih universitas dulu...</span>
+                                        <span id="major-display-text" style="color:rgba(100,116,139,0.5)">Pilih Instansi dulu...</span>
                                         <svg id="major-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(100,116,139,0.5)" stroke-width="2" style="flex-shrink:0;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
                                     </div>
                                     <input type="hidden" id="reg-major" required>

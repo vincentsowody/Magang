@@ -295,9 +295,9 @@ class DocumentController extends Controller
                 'file_path'   => $d->file_path,
                 'file_size'   => $d->file_size_human,
                 'mime_type'   => $d->mime_type,
-                'location'    => $d->notes,          // 'kantor' atau 'terminal'
+                'location'    => $d->notes,
                 'status'      => $d->status,
-                'url'         => $d->file_path ? asset('storage/' . $d->file_path) : null,
+                'url'         => $d->file_path ? '/storage/' . $d->file_path : null,
                 'uploaded_at' => $d->created_at->format('d M Y, H:i'),
             ];
         });
@@ -397,7 +397,7 @@ class DocumentController extends Controller
     // ────────────────────────────────────────────────────
     // PRIVATE HELPERS
     // ────────────────────────────────────────────────────
-    private function saveFile($file, int $applicantId, array $attrs): ApplicantDocument
+    private function saveFile(\Illuminate\Http\UploadedFile $file, int $applicantId, array $attrs): ApplicantDocument
     {
         $origName = $file->getClientOriginalName();
         $ext      = $file->getClientOriginalExtension();
