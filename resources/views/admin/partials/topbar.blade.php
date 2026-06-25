@@ -1,16 +1,17 @@
-<header class="topbar">
-    <div style="display:flex;align-items:center;gap:14px">
+<header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 sm:px-8 flex items-center justify-between z-10 shrink-0">
+    <div class="flex items-center gap-4">
         <div>
-            <div class="topbar-title" id="page-title">Dashboard</div>
-            <div class="topbar-sub" id="page-sub">Rekrutmen PKL Batch 2025</div>
+            <h2 id="page-title" class="font-bold text-slate-800 text-lg leading-tight">Dashboard</h2>
+            <div id="page-sub" class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Rekrutmen PKL Batch 2025</div>
         </div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px">
-        <div class="live-badge">
-            <div class="live-dot"></div>
-            <span>Live</span>
+    <div class="flex items-center gap-4">
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-100">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-wide">Live</span>
         </div>
-        <span id="dash-clock"
-            style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:var(--text-3);letter-spacing:.04em">--:--</span>
+        <div class="bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
+            <span id="dash-clock" class="font-mono text-xs font-bold text-slate-600 tracking-wider">--:--:--</span>
+        </div>
     </div>
 </header>

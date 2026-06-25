@@ -39,20 +39,24 @@ function switchView(view) {
         if (page) page.style.display = 'none';
 
         const nav = document.getElementById(`nav-${v}`);
-        if (nav) nav.classList.remove('active');
+        if (nav) {
+            nav.className = 'nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all';
+        }
     });
 
     const activePage = document.getElementById(`view-${view}`);
     if (activePage) activePage.style.display = 'flex';
 
     const activeNav = document.getElementById(`nav-${view}`);
-    if (activeNav) activeNav.classList.add('active');
+    if (activeNav) {
+        activeNav.className = 'nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-sky-700 bg-sky-50 transition-all';
+    }
 
     const titles = {
-        dashboard: ['Dashboard', 'Rekrutmen PKL Batch 2025'],
-        candidates: ['Kandidat', 'Manajemen Data Pelamar'],
-        documents: ['Dokumen', 'Dokumen Peserta PKL'],
-        report: ['Laporan', 'Analitik dan Statistik']
+        dashboard: ['Dashboard Analitik', 'Rekrutmen PKL Batch 2025'],
+        candidates: ['Manajemen Kandidat', 'Verifikasi & Seleksi Pelamar'],
+        documents: ['Dokumen Peserta', 'Pemberkasan Magang PKL'],
+        report: ['Laporan', 'Analitik & Rekapitulasi']
     };
 
     if (titles[view]) {
@@ -119,9 +123,6 @@ function openReviewModal(id) {
     setText('edit-subtitle', app.name);
     setVal('edit-status', app.status);
 
-    // FIX: dulu pakai name="placement" yang sama dengan placement-modal,
-    // sekarang pakai name="edit-placement" yang terpisah (lihat catatan di
-    // review-modal.blade.php) supaya tidak saling mempengaruhi.
     document.querySelectorAll('input[name="edit-placement"]').forEach(r => r.checked = false);
     selectEditLocation(app.location || null);
 
@@ -144,13 +145,15 @@ function toggleLoc() {
     const statusEl = document.getElementById('edit-status');
     const isAccepted = statusEl ? statusEl.value === 'accepted' : false;
     const locBox = document.getElementById('edit-loc-box');
-    if (locBox) locBox.classList.toggle('hidden', !isAccepted);
+    if (locBox) {
+        if (isAccepted) {
+            locBox.style.display = 'flex';
+        } else {
+            locBox.style.display = 'none';
+        }
+    }
 }
 
-// ── PILIH LOKASI (kartu Head Office / Terminal Ops) ──
-// Setara dengan selectLocation() di placement-modal, tapi pakai ID/nama
-// radio yang khusus untuk modal Review Status (edit-placement-*) supaya
-// tidak bertabrakan dengan modal Konfirmasi Penerimaan.
 function selectEditLocation(val) {
     const kantor = document.getElementById('edit-loc-kantor-card');
     const terminal = document.getElementById('edit-loc-terminal-card');
@@ -158,16 +161,15 @@ function selectEditLocation(val) {
     const radioTerminal = document.getElementById('edit-placement-terminal');
     if (!kantor || !terminal) return;
 
-    kantor.style.borderColor = (val === 'kantor') ? 'var(--accent)' : 'var(--border)';
-    terminal.style.borderColor = (val === 'terminal') ? 'var(--accent)' : 'var(--border)';
-    kantor.style.background = (val === 'kantor') ? 'var(--accent-light)' : '';
-    terminal.style.background = (val === 'terminal') ? 'var(--teal-light)' : '';
+    kantor.style.borderColor = (val === 'kantor') ? '#0284c7' : '#e2e8f0';
+    terminal.style.borderColor = (val === 'terminal') ? '#0d9488' : '#e2e8f0';
+    kantor.style.background = (val === 'kantor') ? '#e0f2fe' : '';
+    terminal.style.background = (val === 'terminal') ? '#ccfbf1' : '';
 
     if (radioKantor) radioKantor.checked = (val === 'kantor');
     if (radioTerminal) radioTerminal.checked = (val === 'terminal');
 }
 
-// ── PILIHAN CEPAT DURASI MAGANG ──
 function setEditDuration(months) {
     const startEl = document.getElementById('edit-start');
     if (!startEl) return;
@@ -202,27 +204,22 @@ function updateDurationInfo() {
 
     if (end <= start) {
         info.textContent = 'Tanggal selesai harus setelah tanggal mulai.';
-        if (badge) badge.style.display = 'flex';
+        if (badge) {
+            badge.style.display = 'flex';
+            badge.style.background = '#ffe4e6';
+            badge.style.color = '#e11d48';
+            badge.style.borderColor = '#fecdd3';
+        }
         return;
     }
     const months = Math.round((end - start) / (1000 * 60 * 60 * 24 * 30.44));
     info.textContent = `Durasi: ± ${months || 1} bulan`;
-    if (badge) badge.style.display = 'flex';
-}
-
-
-// ── DEMO DATA ──
-function loadDemoData() {
-    applicants = [
-        { id: 101, name: 'Sarah Amalia', nim: '2105101', code: 'MAG-2025-089', univ: 'Universitas Indonesia', major: 'Psikologi', status: 'pending', location: null, internship_start: null, internship_end: null },
-        { id: 102, name: 'Dimas Pratama', nim: '1902204', code: 'MAG-2025-012', univ: 'ITB', major: 'Teknik Informatika', status: 'accepted', location: 'kantor', internship_start: '2025-12-01', internship_end: '2026-02-28' },
-        { id: 103, name: 'Reza Rahadian', nim: '2001105', code: 'MAG-2025-045', univ: 'UGM', major: 'Manajemen Bisnis', status: 'rejected', location: null, internship_start: null, internship_end: null },
-        { id: 104, name: 'Linda Kusuma', nim: '2103309', code: 'MAG-2025-102', univ: 'Universitas Brawijaya', major: 'Ilmu Komunikasi', status: 'accepted', location: 'terminal', internship_start: '2025-11-15', internship_end: '2026-01-15' },
-        { id: 105, name: 'Budi Santoso', nim: '2004401', code: 'MAG-2025-001', univ: 'Univ. Sam Ratulangi', major: 'Teknik Sipil', status: 'pending', location: null, internship_start: null, internship_end: null },
-        { id: 106, name: 'Citra Kirana', nim: '2109902', code: 'MAG-2025-156', univ: 'UNPAD', major: 'Hukum', status: 'accepted', location: 'kantor', internship_start: '2025-12-10', internship_end: '2026-03-10' },
-    ];
-    renderTable();
-    showToast('Mode Demo', '6 data simulasi dimuat.', 'info');
+    if (badge) {
+        badge.style.display = 'flex';
+        badge.style.background = '#d1fae5';
+        badge.style.color = '#059669';
+        badge.style.borderColor = '#a7f3d0';
+    }
 }
 
 // ── LOAD DATA ──
@@ -255,8 +252,9 @@ async function handleRegistration(e) {
     e.preventDefault();
     const btn = document.getElementById('reg-btn');
     const orig = btn.innerHTML;
-    btn.innerHTML = '<svg class="animate-spin inline" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Menyimpan...';
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Menyimpan...';
     btn.disabled = true;
+    lucide.createIcons();
 
     const elName = document.getElementById('reg-name');
     const elNim = document.getElementById('reg-nim');
@@ -270,28 +268,11 @@ async function handleRegistration(e) {
     const univ = elUniv ? elUniv.value.trim() : '';
     const major = elMajor ? elMajor.value.trim() : '';
 
-    if (!name) {
-        showToast('Validasi', 'Nama peserta wajib diisi.', 'error');
+    if (!name || !nim || !univ || !major) {
+        showToast('Validasi', 'Mohon lengkapi semua field wajib.', 'error');
         btn.innerHTML = orig;
         btn.disabled = false;
-        return;
-    }
-    if (!nim) {
-        showToast('Validasi', 'NIM / No. Induk wajib diisi.', 'error');
-        btn.innerHTML = orig;
-        btn.disabled = false;
-        return;
-    }
-    if (!univ) {
-        showToast('Validasi', 'Universitas / Sekolah wajib diisi.', 'error');
-        btn.innerHTML = orig;
-        btn.disabled = false;
-        return;
-    }
-    if (!major) {
-        showToast('Validasi', 'Pilih Program Studi terlebih dahulu.', 'error');
-        btn.innerHTML = orig;
-        btn.disabled = false;
+        lucide.createIcons();
         return;
     }
 
@@ -332,7 +313,7 @@ async function handleRegistration(e) {
     }
 }
 
-// ── RENDER TABLE ──
+// ── RENDER TABLE (TAILWIND UI) ──
 function renderTable() {
     const tbody = document.getElementById('table-body');
     if (!tbody) return;
@@ -349,8 +330,8 @@ function renderTable() {
 
     const filtered = applicants.filter(a => {
         if (a.status === 'pending') stats.pending++;
-        if (a.status === 'accepted' && a.location === 'kantor') stats.kantor++;
-        if (a.status === 'accepted' && a.location === 'terminal') stats.terminal++;
+        if (a.status === 'accepted' && (a.location === 'kantor' || a.location === 'Kantor Pusat')) stats.kantor++;
+        if (a.status === 'accepted' && (a.location === 'terminal' || a.location === 'Terminal Ops')) stats.terminal++;
         return (filter === 'all' || a.status === filter) && (a.name.toLowerCase().includes(search) || (a.nim || '').toLowerCase().includes(search));
     });
 
@@ -362,72 +343,76 @@ function renderTable() {
     const emptyState = document.getElementById('empty-state');
 
     if (filtered.length === 0) {
-        if (emptyState) emptyState.style.display = 'block';
+        if (emptyState) emptyState.style.display = 'flex';
     } else {
         if (emptyState) emptyState.style.display = 'none';
 
         filtered.sort((a, b) => b.id - a.id).forEach((a, i) => {
-                    let badge = '';
-                    if (a.status === 'pending') badge = `<span class="badge b-pending"><span class="badge-dot"></span>Pending</span>`;
-                    else if (a.status === 'accepted') badge = `<span class="badge b-accepted">✓ Diterima</span>`;
-                    else badge = `<span class="badge b-rejected">✕ Ditolak</span>`;
+                    // Ambil inisial nama
+                    const initials = a.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
-                    let loc = '<span style="color:var(--text-muted);font-size:11px">—</span>';
-                    if (a.location === 'kantor') loc = '<span class="loc-tag loc-kantor">🏢 Head Office</span>';
-                    if (a.location === 'terminal') loc = '<span class="loc-tag loc-terminal">✈ Terminal Ops</span>';
+                    // Badge Status Tailwind
+                    let badge = '';
+                    if (a.status === 'pending') badge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-200"><i data-lucide="clock" class="w-3 h-3"></i> Pending</span>`;
+                    else if (a.status === 'accepted') badge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Diterima</span>`;
+                    else badge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200"><i data-lucide="x-circle" class="w-3 h-3"></i> Ditolak</span>`;
+
+                    // Lokasi
+                    let locText = '<span class="text-slate-300 font-bold">—</span>';
+                    if (a.location === 'kantor' || a.location === 'Kantor Pusat') locText = '<span class="inline-flex items-center gap-1.5 font-bold text-slate-700 text-xs"><i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400"></i> Head Office</span>';
+                    else if (a.location === 'terminal' || a.location === 'Terminal Ops') locText = '<span class="inline-flex items-center gap-1.5 font-bold text-slate-700 text-xs"><i data-lucide="plane" class="w-3.5 h-3.5 text-slate-400"></i> Terminal Ops</span>';
 
                     if (a.status === 'accepted' && a.internship_start && a.internship_end) {
                         const s = new Date(a.internship_start).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
                         const e = new Date(a.internship_end).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-                        loc += `<div class="td-sub" style="margin-top:3px">📅 ${s} – ${e}</div>`;
+                        locText += `<div class="text-[10px] text-slate-500 mt-1">📅 ${s} – ${e}</div>`;
                     }
-
-                    const dateStr = a.created_at ? new Date(a.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
 
                     const pendingDocsCount = typeof countPendingDocs === 'function' ? countPendingDocs(a) : 0;
                     const isChecked = selectedIds.has(a.id);
 
                     tbody.innerHTML += `
-                <tr class="row-animate" style="animation-delay:${i * 35}ms;${isChecked ? 'background:rgba(59,130,246,0.07)' : ''}">
-                    <td style="padding:12px 16px;text-align:center">
-                        <input type="checkbox" class="row-check" data-id="${a.id}" onchange="toggleRowCheck(this)"
-                            ${isChecked ? 'checked' : ''}
-                            style="width:14px;height:14px;cursor:pointer;accent-color:var(--accent)">
+                <tr class="hover:bg-slate-50 transition-colors group ${isChecked ? 'bg-sky-50/50' : ''}">
+                    <td class="pl-6 pr-2 py-4 text-center">
+                        <input type="checkbox" class="row-check w-4 h-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer transition-colors" data-id="${a.id}" onchange="toggleRowCheck(this)" ${isChecked ? 'checked' : ''}>
                     </td>
-                    <td>
-                        <div style="display:flex;align-items:center;gap:10px">
-                            <div class="avatar">${a.name.charAt(0).toUpperCase()}</div>
+                    <td class="px-4 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0">
+                                ${initials}
+                            </div>
                             <div>
-                                <div class="td-name">${a.name}</div>
-                                <div class="td-sub" style="font-family:'JetBrains Mono',monospace">NIM: ${a.nim || '<em style="opacity:0.4">—</em>'}</div>
+                                <div class="font-bold text-slate-800 text-sm">${a.name}</div>
+                                <div class="text-[11px] text-slate-400 font-mono mt-0.5">NIM: ${a.nim || '<em class="opacity-50">—</em>'}</div>
                             </div>
                         </div>
                     </td>
-                    <td><span class="code-chip">${a.code}</span></td>
-                    <td>
-                        <div style="font-size:12px;color:var(--text-secondary);font-weight:500">${a.univ}</div>
-                        <div class="td-sub">${a.major}</div>
+                    <td class="px-4 py-4">
+                        <span class="font-mono text-[11px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-md tracking-wide">${a.code}</span>
                     </td>
-                    <td>${badge}</td>
-                    <td>${loc}</td>
-                    <td style="font-size:11px;color:var(--text-muted)">${dateStr}</td>
-                    <td style="text-align:center">
-                        <div style="display:flex;justify-content:center;gap:6px">
-                            <button onclick="openDocReviewModal(${a.id})" class="btn-icon" title="Review Dokumen" style="position:relative">
-                                <i data-lucide="file-check-2" style="width:12px;height:12px"></i>
-                                ${pendingDocsCount > 0 ? `<span style="position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;background:var(--amber);color:#000;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center">${pendingDocsCount}</span>` : ''}
+                    <td class="px-4 py-4">
+                        <div class="font-bold text-slate-700 text-xs">${a.univ}</div>
+                        <div class="text-[11px] font-medium text-slate-500 mt-0.5 max-w-[200px] truncate" title="${a.major}">${a.major}</div>
+                    </td>
+                    <td class="px-4 py-4">${badge}</td>
+                    <td class="px-4 py-4">${locText}</td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="openDocReviewModal(${a.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors relative" title="Review Dokumen">
+                                <i data-lucide="file-check-2" class="w-4 h-4"></i>
+                                ${pendingDocsCount > 0 ? `<span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[8px] font-bold">${pendingDocsCount}</span>` : ''}
                             </button>
-                            ${a.status === 'pending' ? `<button onclick="openPlacementModal(${a.id}, '${a.name.replace(/'/g, "\\'")}')" class="btn-icon" title="Terima Pelamar" style="color:var(--green);border-color:rgba(34,197,94,0.3)">
-                                <i data-lucide="user-check" style="width:12px;height:12px"></i>
+                            ${a.status === 'pending' ? `<button onclick="openPlacementModal(${a.id}, '${a.name.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Terima Pelamar">
+                                <i data-lucide="user-check" class="w-4 h-4"></i>
                             </button>` : ''}
-                            ${a.status === 'accepted' ? `<button onclick="triggerReplyLetterUpload(${a.id})" class="btn-icon" title="${a.reply_letter_path ? 'Surat balasan sudah ada — klik untuk ganti' : 'Surat balasan belum ada — klik untuk upload'}" style="${a.reply_letter_path ? 'color:var(--green);border-color:rgba(34,197,94,0.3)' : 'color:var(--amber);border-color:rgba(245,158,11,0.3)'}">
-                                <i data-lucide="${a.reply_letter_path ? 'file-check-2' : 'file-warning'}" style="width:12px;height:12px"></i>
+                            ${a.status === 'accepted' ? `<button onclick="triggerReplyLetterUpload(${a.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="${a.reply_letter_path ? 'Ganti surat balasan' : 'Upload surat balasan'}">
+                                <i data-lucide="${a.reply_letter_path ? 'file-check-2' : 'file-warning'}" class="w-4 h-4 ${a.reply_letter_path ? 'text-emerald-500' : 'text-amber-500'}"></i>
                             </button>` : ''}
-                            <button onclick="openReviewModal(${a.id})" class="btn-icon" title="Edit Status">
-                                <i data-lucide="file-edit" style="width:12px;height:12px"></i>
+                            <button onclick="openReviewModal(${a.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors" title="Edit Status">
+                                <i data-lucide="file-edit" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="deleteApp(${a.id})" class="btn-icon danger" title="Hapus">
-                                <i data-lucide="trash-2" style="width:12px;height:12px"></i>
+                            <button onclick="deleteApp(${a.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Hapus">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
                     </td>
@@ -451,7 +436,7 @@ async function saveEdit() {
         const startEl = document.getElementById('edit-start');
         const endEl = document.getElementById('edit-end');
         if (!startEl || !endEl) {
-            showToast('Error Tampilan', 'Field tanggal masa magang tidak ditemukan di halaman. Refresh halaman dan coba lagi.', 'error');
+            showToast('Error Tampilan', 'Field tanggal masa magang tidak ditemukan.', 'error');
             return;
         }
         internship_start = startEl.value;
@@ -505,10 +490,7 @@ async function deleteApp(id) {
     }
 }
 
-// ── UPLOAD / GANTI SURAT BALASAN LANGSUNG DARI TABEL ──
-// Sebelumnya tidak ada cara lain untuk upload surat balasan selain saat
-// pertama kali "Terima Pelamar" — kalau upload itu gagal (atau dilewati),
-// tidak ada jalan untuk retry. Sekarang bisa lewat tombol di tabel kandidat.
+// ── UPLOAD SURAT BALASAN ──
 function triggerReplyLetterUpload(id) {
     const input = document.createElement('input');
     input.type = 'file';
@@ -555,6 +537,11 @@ function toggleRowCheck(checkbox) {
         selectedIds.delete(id);
     }
     updateBulkUI();
+    const row = checkbox.closest('tr');
+    if(row) {
+        if(checkbox.checked) row.classList.add('bg-sky-50/50');
+        else row.classList.remove('bg-sky-50/50');
+    }
 }
 
 // ── CHECKBOX SELECT ALL ──
@@ -569,7 +556,10 @@ function toggleCheckAll(masterCheckbox) {
             selectedIds.delete(id);
         }
         const row = cb.closest('tr');
-        if (row) row.style.background = masterCheckbox.checked ? 'rgba(59,130,246,0.07)' : '';
+        if (row) {
+            if(masterCheckbox.checked) row.classList.add('bg-sky-50/50');
+            else row.classList.remove('bg-sky-50/50');
+        }
     });
     updateBulkUI();
 }
@@ -635,35 +625,41 @@ function animateValue(id, start, end, duration) {
     }, step);
 }
 
-// ── TOAST ──
+// ── TOAST (TAILWIND UI) ──
 function showToast(title, message, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) return; 
 
     const toast = document.createElement('div');
-    const colors = {
-        success: { accent: '#4ade80', icon: 'check-circle-2' },
-        error: { accent: '#f87171', icon: 'alert-circle' },
-        info: { accent: '#00b9e8', icon: 'info' }
+    const styles = {
+        success: { text: '#059669', icon: 'check-circle-2', border: 'border-l-4 border-l-emerald-500' },
+        error:   { text: '#e11d48', icon: 'alert-circle',   border: 'border-l-4 border-l-rose-500' },
+        info:    { text: '#0284c7', icon: 'info',           border: 'border-l-4 border-l-sky-500' }
     };
-    const c = colors[type] || colors.info;
+    const c = styles[type] || styles.info;
     
-    toast.className = 'toast';
-    toast.style.borderLeft = `3px solid ${c.accent}`;
+    // Gunakan class bawaan tailwind dan custom toast CSS
+    toast.className = `toast bg-white border border-slate-200 ${c.border} rounded-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] p-4 mb-3 flex items-start gap-3 transition-all`;
+    
     toast.innerHTML = `
-        <i data-lucide="${c.icon}" style="width:16px;height:16px;color:${c.accent};flex-shrink:0;margin-top:1px"></i>
-        <div style="flex:1">
-            <div style="font-weight:600;font-size:13px;color:#e2e8f0;margin-bottom:2px">${title}</div>
-            <div style="font-size:12px;color:rgba(148,163,184,0.7)">${message}</div>
+        <div class="flex-shrink-0 mt-0.5">
+            <i data-lucide="${c.icon}" class="w-5 h-5" style="color:${c.text}"></i>
         </div>
-        <button onclick="this.closest('.toast').remove()" style="color:rgba(100,116,139,0.5);cursor:pointer;padding:2px;transition:color .2s;background:transparent;border:none" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='rgba(100,116,139,0.5)'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>`;
+        <div class="flex-1 min-w-0">
+            <div class="font-bold text-sm text-slate-800 tracking-tight">${title}</div>
+            <div class="text-xs font-medium text-slate-500 mt-0.5 leading-relaxed">${message}</div>
+        </div>
+        <button onclick="this.closest('.toast').remove()" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-50">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+    `;
         
     container.appendChild(toast);
     lucide.createIcons();
+    
+    // Hapus toast otomatis
     setTimeout(() => { 
-        toast.classList.add('out'); 
-        setTimeout(() => toast.remove(), 350); 
-    }, 4000);
+        toast.style.animation = 'slideOut 0.3s ease forwards'; 
+        setTimeout(() => toast.remove(), 300); 
+    }, 4500);
 }

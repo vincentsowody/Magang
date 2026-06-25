@@ -3,8 +3,8 @@
 
         {{-- Header --}}
         <div class="modal-hdr" style="display:flex;align-items:center;justify-content:space-between">
-            <div style="display:flex;align-items:center;gap:10px">
-                <div class="stat-icon" style="background:var(--green-light);width:32px;height:32px;margin:0;border-radius:8px">
+            <div style="display:flex;align-items:center;gap:11px">
+                <div class="stat-icon" style="background:var(--green-light);width:34px;height:34px;margin:0;border-radius:9px">
                     <i data-lucide="user-check" style="width:15px;height:15px;color:var(--green)"></i>
                 </div>
                 <div>
@@ -17,26 +17,26 @@
             </button>
         </div>
 
-        <div class="modal-body" style="display:flex;flex-direction:column;gap:16px">
+        <div class="modal-body" style="display:flex;flex-direction:column;gap:18px">
 
             {{-- Step indicator --}}
             <div style="display:flex;align-items:center;gap:0">
-                <div id="step-ind-1" style="display:flex;align-items:center;gap:6px;flex:1">
-                    <div style="width:22px;height:22px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">1</div>
+                <div id="step-ind-1" style="display:flex;align-items:center;gap:7px;flex:1">
+                    <div style="width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">1</div>
                     <span style="font-size:11px;font-weight:600;color:var(--accent)">Penempatan & Durasi</span>
                 </div>
-                <div style="flex:1;height:1px;background:var(--border);margin:0 8px"></div>
-                <div id="step-ind-2" style="display:flex;align-items:center;gap:6px">
-                    <div id="step2-circle" style="width:22px;height:22px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text-muted);flex-shrink:0">2</div>
+                <div class="step-line"></div>
+                <div id="step-ind-2" style="display:flex;align-items:center;gap:7px">
+                    <div id="step2-circle" style="width:24px;height:24px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text-muted);flex-shrink:0">2</div>
                     <span id="step2-label" style="font-size:11px;font-weight:600;color:var(--text-muted)">Surat Balasan</span>
                 </div>
             </div>
 
             {{-- ══ STEP 1: Penempatan & Durasi ══ --}}
-            <div id="placement-step-1">
+            <div id="placement-step-1" style="display:flex;flex-direction:column;gap:14px">
 
                 {{-- Unit / Divisi --}}
-                <div style="margin-bottom:12px">
+                <div>
                     <label class="form-label">Unit / Divisi Penempatan <span style="color:var(--red)">*</span></label>
                     <select id="placement-lokasi" class="form-input">
                         <option value="">— Pilih Unit Penempatan —</option>
@@ -52,13 +52,13 @@
                     </select>
                 </div>
 
-                {{-- Lokasi (kantor/terminal) --}}
-                <div style="margin-bottom:12px">
+                {{-- Lokasi kerja --}}
+                <div>
                     <label class="form-label">Lokasi Kerja <span style="color:var(--red)">*</span></label>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
                         <label id="loc-kantor-card" onclick="selectLocation('kantor')"
-                            style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s">
-                            <div style="width:30px;height:30px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s">
+                            <div style="width:32px;height:32px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                                 <i data-lucide="building-2" style="width:14px;height:14px;color:var(--accent)"></i>
                             </div>
                             <div>
@@ -67,8 +67,8 @@
                             </div>
                         </label>
                         <label id="loc-terminal-card" onclick="selectLocation('terminal')"
-                            style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s">
-                            <div style="width:30px;height:30px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s">
+                            <div style="width:32px;height:32px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                                 <i data-lucide="plane" style="width:14px;height:14px;color:var(--teal)"></i>
                             </div>
                             <div>
@@ -80,32 +80,32 @@
                     <input type="hidden" id="placement-location-val">
                 </div>
 
-                {{-- Durasi magang --}}
-                <div style="margin-bottom:4px">
+                {{-- Masa Magang --}}
+                <div>
                     <label class="form-label">Masa Magang <span style="color:var(--red)">*</span></label>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+                    <div class="form-row" style="margin-bottom:8px">
                         <div>
-                            <div style="font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Tanggal Mulai</div>
+                            <div class="form-section-label">Tanggal Mulai</div>
                             <input type="date" id="placement-start" class="form-input" onchange="plUpdateDurationInfo()">
                         </div>
                         <div>
-                            <div style="font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Tanggal Selesai</div>
+                            <div class="form-section-label">Tanggal Selesai</div>
                             <input type="date" id="placement-end" class="form-input" onchange="plUpdateDurationInfo()">
                         </div>
                     </div>
 
-                    {{-- Durasi info badge --}}
-                    <div id="duration-badge" style="display:none;background:var(--green-light);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius-sm);padding:8px 12px;display:flex;align-items:center;gap:8px">
+                    {{-- Duration badge --}}
+                    <div id="duration-badge" style="display:none;background:var(--green-light);border:1px solid rgba(34,197,94,0.2);border-radius:var(--r-sm);padding:8px 12px;align-items:center;gap:8px">
                         <i data-lucide="calendar-check" style="width:13px;height:13px;color:var(--green);flex-shrink:0"></i>
                         <span id="duration-text" style="font-size:12px;font-weight:600;color:var(--green)"></span>
                     </div>
 
                     {{-- Pilihan cepat durasi --}}
-                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-                        <span style="font-size:10px;color:var(--text-muted);align-self:center">Pilihan cepat:</span>
-                        @foreach([1=>'1 Bulan', 2=>'2 Bulan', 3=>'3 Bulan', 6=>'6 Bulan'] as $m => $label)
+                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center">
+                        <span style="font-size:10px;color:var(--text-muted)">Cepat:</span>
+                        @foreach([1=>'1 Bln', 2=>'2 Bln', 3=>'3 Bln', 6=>'6 Bln'] as $m => $label)
                         <button type="button" onclick="setDuration({{ $m }})"
-                            style="font-size:10px;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text-secondary);cursor:pointer;transition:all .15s"
+                            style="font-size:10.5px;padding:3px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text-secondary);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif"
                             onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
                             onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
                             {{ $label }}
@@ -117,14 +117,13 @@
             </div>
 
             {{-- ══ STEP 2: Upload Surat Balasan ══ --}}
-            <div id="placement-step-2" style="display:none;flex-direction:column;gap:12px">
+            <div id="placement-step-2" style="display:none;flex-direction:column;gap:14px">
 
-                {{-- Info box --}}
-                <div style="background:var(--accent-light);border:1px solid rgba(59,130,246,0.2);border-radius:var(--radius-sm);padding:10px 12px;display:flex;gap:8px">
+                <div class="info-box">
                     <i data-lucide="info" style="width:14px;height:14px;color:var(--accent);flex-shrink:0;margin-top:1px"></i>
-                    <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">
-                        Upload surat balasan resmi dari kantor sebagai bukti penerimaan magang.
-                        File akan dapat diakses oleh peserta melalui portal mereka.
+                    <div style="font-size:12px;line-height:1.65">
+                        Upload surat balasan resmi sebagai bukti penerimaan magang.
+                        File akan dapat diakses peserta melalui portal mereka.
                     </div>
                 </div>
 
@@ -132,9 +131,8 @@
                 <div id="pl-drop-zone"
                     onclick="document.getElementById('pl-file-input').click()"
                     ondragover="plDragOver(event)" ondragleave="plDragLeave(event)" ondrop="plDrop(event)"
-                    style="border:2px dashed rgba(255,255,255,0.1);border-radius:var(--radius);padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s">
+                    style="border:2px dashed rgba(255,255,255,0.1);border-radius:var(--r-lg);padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s">
                     <input type="file" id="pl-file-input" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="plFileSelect(event)">
-
                     <div id="pl-drop-idle">
                         <div style="width:44px;height:44px;border-radius:12px;background:var(--accent-light);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
                             <i data-lucide="file-up" style="width:20px;height:20px;color:var(--accent)"></i>
@@ -142,7 +140,6 @@
                         <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px">Klik atau seret file ke sini</div>
                         <div style="font-size:11px;color:var(--text-muted)">PDF, JPG, PNG · Maks. 5 MB</div>
                     </div>
-
                     <div id="pl-drop-preview" style="display:none;align-items:center;gap:12px">
                         <div style="width:38px;height:38px;border-radius:10px;background:var(--accent-light);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                             <i data-lucide="file-check" style="width:17px;height:17px;color:var(--accent)"></i>
@@ -157,7 +154,6 @@
                     </div>
                 </div>
 
-                {{-- Skip note --}}
                 <div style="text-align:center">
                     <span style="font-size:11px;color:var(--text-muted)">Upload surat bisa dilakukan nanti melalui tabel kandidat</span>
                 </div>

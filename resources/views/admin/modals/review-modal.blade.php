@@ -1,9 +1,11 @@
 <div id="review-modal" class="modal-backdrop">
     <div class="modal-box" style="max-width:560px;width:100%">
+
+        {{-- Header --}}
         <div class="modal-hdr" style="display:flex;align-items:center;justify-content:space-between">
-            <div style="display:flex;align-items:center;gap:10px">
-                <div class="stat-icon" style="background:rgba(0,185,232,0.1);width:32px;height:32px;margin:0;border-radius:8px">
-                    <i data-lucide="file-edit" style="width:15px;height:15px;color:#00b9e8"></i>
+            <div style="display:flex;align-items:center;gap:11px">
+                <div class="stat-icon" style="background:var(--accent-light);width:34px;height:34px;margin:0;border-radius:9px">
+                    <i data-lucide="file-edit" style="width:15px;height:15px;color:var(--accent)"></i>
                 </div>
                 <div>
                     <div style="font-size:14px;font-weight:700;color:var(--text-primary)">Review Status</div>
@@ -28,17 +30,16 @@
                 </select>
             </div>
 
-            {{-- Tampil hanya jika status = Diterima — tampilan disamakan
-                 dengan modal "Konfirmasi Penerimaan" (placement-modal). --}}
-            <div id="edit-loc-box" class="hidden" style="display:flex;flex-direction:column;gap:12px">
+            {{-- Tampil jika status = Diterima --}}
+            <div id="edit-loc-box" class="hidden" style="display:flex;flex-direction:column;gap:14px">
 
                 {{-- Lokasi Kerja --}}
                 <div>
                     <label class="form-label">Lokasi Kerja <span style="color:var(--red)">*</span></label>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
                         <label id="edit-loc-kantor-card" onclick="selectEditLocation('kantor')"
-                            style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s">
-                            <div style="width:30px;height:30px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s">
+                            <div style="width:32px;height:32px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                                 <i data-lucide="building-2" style="width:14px;height:14px;color:var(--accent)"></i>
                             </div>
                             <div>
@@ -47,8 +48,8 @@
                             </div>
                         </label>
                         <label id="edit-loc-terminal-card" onclick="selectEditLocation('terminal')"
-                            style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s">
-                            <div style="width:30px;height:30px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s">
+                            <div style="width:32px;height:32px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                                 <i data-lucide="plane" style="width:14px;height:14px;color:var(--teal)"></i>
                             </div>
                             <div>
@@ -57,42 +58,34 @@
                             </div>
                         </label>
                     </div>
-                    {{-- FIX: dipisah dari radio "placement" di placement-modal
-                         (name="edit-placement") supaya pilihan di satu modal
-                         tidak ikut mengubah pilihan di modal lain — sebelumnya
-                         dua modal berbagi name="placement" yang sama, padahal
-                         radio button dikelompokkan per "name" di seluruh
-                         halaman, bukan per modal. --}}
-                    <input type="radio" name="edit-placement" value="kantor" id="edit-placement-kantor" style="display:none">
+                    <input type="radio" name="edit-placement" value="kantor"   id="edit-placement-kantor"   style="display:none">
                     <input type="radio" name="edit-placement" value="terminal" id="edit-placement-terminal" style="display:none">
                 </div>
 
                 {{-- Masa Magang --}}
                 <div>
                     <label class="form-label">Masa Magang <span style="color:var(--red)">*</span></label>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+                    <div class="form-row" style="margin-bottom:8px">
                         <div>
-                            <div style="font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Tanggal Mulai</div>
+                            <div class="form-section-label">Tanggal Mulai</div>
                             <input type="date" id="edit-start" class="form-input" onchange="updateDurationInfo()">
                         </div>
                         <div>
-                            <div style="font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Tanggal Selesai</div>
+                            <div class="form-section-label">Tanggal Selesai</div>
                             <input type="date" id="edit-end" class="form-input" onchange="updateDurationInfo()">
                         </div>
                     </div>
 
-                    {{-- Durasi info badge --}}
-                    <div id="edit-duration-badge" style="display:none;background:var(--green-light);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius-sm);padding:8px 12px;align-items:center;gap:8px">
+                    <div id="edit-duration-badge" style="display:none;background:var(--green-light);border:1px solid rgba(34,197,94,0.2);border-radius:var(--r-sm);padding:8px 12px;align-items:center;gap:8px">
                         <i data-lucide="calendar-check" style="width:13px;height:13px;color:var(--green);flex-shrink:0"></i>
                         <span id="edit-duration-info" style="font-size:12px;font-weight:600;color:var(--green)"></span>
                     </div>
 
-                    {{-- Pilihan cepat durasi --}}
-                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-                        <span style="font-size:10px;color:var(--text-muted);align-self:center">Pilihan cepat:</span>
-                        @foreach([1=>'1 Bulan', 2=>'2 Bulan', 3=>'3 Bulan', 6=>'6 Bulan'] as $m => $label)
+                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center">
+                        <span style="font-size:10px;color:var(--text-muted)">Cepat:</span>
+                        @foreach([1=>'1 Bln', 2=>'2 Bln', 3=>'3 Bln', 6=>'6 Bln'] as $m => $label)
                         <button type="button" onclick="setEditDuration({{ $m }})"
-                            style="font-size:10px;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text-secondary);cursor:pointer;transition:all .15s"
+                            style="font-size:10.5px;padding:3px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text-secondary);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif"
                             onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
                             onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
                             {{ $label }}
@@ -102,11 +95,14 @@
                 </div>
 
             </div>
+
         </div>
 
         <div class="modal-ftr">
-            <button onclick="closeReviewModal()" class="flex-1 py-2.5 font-semibold text-sm text-slate-400" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;">Batal</button>
-            <button onclick="saveEdit()" class="btn-primary flex-1 justify-center py-2.5" style="border-radius:10px">Simpan Perubahan</button>
+            <button onclick="closeReviewModal()" class="btn-ghost" style="flex:1;justify-content:center">Batal</button>
+            <button onclick="saveEdit()" class="btn-primary" style="flex:1;justify-content:center">
+                <i data-lucide="save" style="width:13px;height:13px"></i> Simpan Perubahan
+            </button>
         </div>
     </div>
 </div>

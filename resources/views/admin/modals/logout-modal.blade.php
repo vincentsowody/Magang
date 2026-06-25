@@ -1,15 +1,20 @@
-        <div id="logout-modal" class="modal-backdrop">
-            <div class="modal-box" style="max-width:360px">
-                <div class="modal-body text-center">
-                    <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2)">
-                        <i data-lucide="log-out" style="width:22px;height:22px;color:#f87171"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Keluar Dashboard?</h3>
-                    <p class="text-sm text-slate-400">Sesi Anda akan berakhir. Anda perlu login ulang untuk melanjutkan.</p>
-                </div>
-                <div class="modal-ftr">
-                    <button onclick="closeLogoutModal()" class="flex-1 py-2.5 rounded-10px font-semibold text-sm transition-all" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;border-radius:10px;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Batal</button>
-                    <button onclick="handleLogout()" class="flex-1 py-2.5 rounded-10px font-semibold text-sm text-white transition-all" style="background:#dc2626;border-radius:10px;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">Ya, Keluar</button>
-                </div>
+<div id="logout-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:340px;text-align:center">
+        <div class="modal-body" style="padding:28px 24px 20px">
+            <div style="width:50px;height:50px;border-radius:14px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+                <i data-lucide="log-out" style="width:22px;height:22px;color:var(--red)"></i>
+            </div>
+            <div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:6px">Keluar dari Sistem?</div>
+            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.65">
+                Sesi Anda akan berakhir. Diperlukan login ulang untuk mengakses dashboard.
             </div>
         </div>
+        <div class="modal-ftr">
+            <button onclick="closeLogoutModal()" class="btn-ghost" style="flex:1;justify-content:center">Batal</button>
+            <button onclick="handleLogout()" style="flex:1;justify-content:center;background:#dc2626;border:none;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:var(--r-sm);display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:background .15s"
+                onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+                <i data-lucide="log-out" style="width:13px;height:13px"></i> Ya, Keluar
+            </button>
+        </div>
+    </div>
+</div>
