@@ -1,8 +1,12 @@
 function toggleExportMenu() {
     const menu = document.getElementById('export-menu');
     menu.classList.toggle('open');
-    const close = (e) => { if (!document.getElementById('export-btn').contains(e.target)) { menu.classList.remove('open');
-            document.removeEventListener('click', close); } };
+    const close = (e) => {
+        if (!document.getElementById('export-btn').contains(e.target)) {
+            menu.classList.remove('open');
+            document.removeEventListener('click', close);
+        }
+    };
     setTimeout(() => document.addEventListener('click', close), 100);
 }
 
@@ -30,12 +34,19 @@ function getFilteredData() {
 // klik export akan selalu gagal (401). Sekarang diambil lewat
 // authFetch() lalu didownload sebagai blob.
 async function exportCsv() {
-    document.getElementById('export-menu').classList.remove('open');
+    // FIX BUG: dropdown export sudah diganti jadi CSS hover-based (lihat
+    // report-view.blade.php, pakai class "group"/"group-hover"), elemen
+    // id="export-menu" sudah tidak ada di HTML lagi. Baris lama ini bikin
+    // TypeError (Cannot read properties of null) dan menghentikan fungsi
+    // sebelum proses export sempat berjalan -- export CSV selalu gagal diam-diam.
     const status = getElVal('export-filter-status', 'all');
     const loc = getElVal('export-filter-loc', 'all');
     const url = `${API_BASE_URL}/report/export-csv?status=${status}&location=${loc}`;
     try {
-        const res = await authFetch(url);
+        // FIX BUG: authFetch() tidak pernah didefinisikan (ReferenceError),
+        // export CSV selalu gagal. Route ini sudah tidak diproteksi
+        // auth:sanctum lagi, jadi fetch() biasa sudah cukup.
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Export gagal');
         const blob = await res.blob();
         const blobUrl = URL.createObjectURL(blob);
@@ -54,7 +65,8 @@ async function exportCsv() {
 }
 
 function exportExcel() {
-    document.getElementById('export-menu').classList.remove('open');
+    // FIX BUG: sama seperti exportCsv() -- elemen "export-menu" sudah tidak
+    // ada lagi sejak dropdown export diganti jadi CSS hover-based.
     const rows = getFilteredData();
     const sL = { pending: 'Pending', accepted: 'Diterima', rejected: 'Ditolak' };
     const lL = { kantor: 'Head Office', terminal: 'Terminal Ops' };
@@ -116,7 +128,8 @@ function exportExcel() {
 // 4. a.univ / a.major dijaga dengan fallback string kosong supaya
 //    tidak crash kalau datanya null.
 function exportPdf() {
-    document.getElementById('export-menu').classList.remove('open');
+    // FIX BUG: sama seperti exportCsv()/exportExcel() -- "export-menu"
+    // sudah tidak ada lagi sejak dropdown export diganti jadi CSS hover-based.
     if (!window.jspdf) { showToast('Error', 'Library PDF belum siap, coba lagi.', 'error'); return; }
     const { jsPDF } = window.jspdf;
     const rows = getFilteredData();
@@ -254,8 +267,10 @@ function exportPdf() {
 
     // ── Blok tanda tangan di akhir dokumen ──
     let sigY = doc.lastAutoTable.finalY + 16;
-    if (sigY > H - 40) { doc.addPage();
-        sigY = 26; }
+    if (sigY > H - 40) {
+        doc.addPage();
+        sigY = 26;
+    }
     const sigCols = ['Dibuat oleh', 'Diperiksa oleh', 'Disetujui oleh'];
     const sigColW = (W - MARGIN * 2) / sigCols.length;
     doc.setFontSize(8.5);

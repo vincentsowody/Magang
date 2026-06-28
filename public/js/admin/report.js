@@ -101,12 +101,18 @@ function renderDonut(ov) {
     const rejEl = document.getElementById('donut-rejected');
     const penEl = document.getElementById('donut-pending');
 
-    if (accEl) { accEl.setAttribute('stroke-dasharray', `${aLen} ${CIRC - aLen}`);
-        accEl.setAttribute('stroke-dashoffset', CIRC * 0.25); }
-    if (rejEl) { rejEl.setAttribute('stroke-dasharray', `${rLen} ${CIRC - rLen}`);
-        rejEl.setAttribute('stroke-dashoffset', CIRC * 0.25 - aLen); }
-    if (penEl) { penEl.setAttribute('stroke-dasharray', `${pLen} ${CIRC - pLen}`);
-        penEl.setAttribute('stroke-dashoffset', CIRC * 0.25 - aLen - rLen); }
+    if (accEl) {
+        accEl.setAttribute('stroke-dasharray', `${aLen} ${CIRC - aLen}`);
+        accEl.setAttribute('stroke-dashoffset', CIRC * 0.25);
+    }
+    if (rejEl) {
+        rejEl.setAttribute('stroke-dasharray', `${rLen} ${CIRC - rLen}`);
+        rejEl.setAttribute('stroke-dashoffset', CIRC * 0.25 - aLen);
+    }
+    if (penEl) {
+        penEl.setAttribute('stroke-dasharray', `${pLen} ${CIRC - pLen}`);
+        penEl.setAttribute('stroke-dashoffset', CIRC * 0.25 - aLen - rLen);
+    }
 
     const ctr = document.getElementById('donut-center-num');
     if (ctr) ctr.textContent = ov.total || 0;

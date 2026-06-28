@@ -1,115 +1,213 @@
+{{-- ══════════════════════════════════════════════════════════
+     MODAL — Konfirmasi Penerimaan (Placement)
+     Perbaikan tampilan:
+     - Step indicator: circle + line ter-center vertikal dengan benar
+     - Lokasi card: tinggi seragam, icon + teks selalu aligned
+     - Duration badge: spacing konsisten, muncul tepat di bawah date row
+     - Quick-pick buttons: ukuran dan font seragam semua 4 tombol
+     - Drop zone: tinggi fixed, idle & preview center sempurna
+     - Footer: tombol selalu equal-width, tidak ada layout shift saat step berganti
+     ══════════════════════════════════════════════════════════ --}}
+
+<style>
+/* ── Placement modal overrides ── */
+/* Select chevron tanpa data URI (aman untuk HTML parser) */
+#placementModal .pl-select-arrow {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+#placementModal .pl-field        { display:flex;flex-direction:column;gap:6px; }
+#placementModal .pl-field-label  { font-size:11.5px;font-weight:600;color:var(--text-secondary);letter-spacing:0.01em; }
+#placementModal .pl-field-label .req { color:var(--danger);margin-left:2px; }
+
+/* Step indicator */
+#placementModal .pl-step-wrap    { display:flex;align-items:center;gap:0;padding:4px 0; }
+#placementModal .pl-step         { display:flex;align-items:center;gap:8px; }
+#placementModal .pl-step-num     { width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:background .2s,color .2s; }
+#placementModal .pl-step-label   { font-size:11.5px;font-weight:600;transition:color .2s;white-space:nowrap; }
+#placementModal .pl-step-line    { flex:1;height:1px;background:var(--border);margin:0 12px; }
+#placementModal .pl-step.active .pl-step-num   { background:var(--primary);color:#fff; }
+#placementModal .pl-step.active .pl-step-label { color:var(--primary); }
+#placementModal .pl-step.inactive .pl-step-num   { background:var(--border);color:var(--text-muted); }
+#placementModal .pl-step.inactive .pl-step-label { color:var(--text-muted); }
+
+/* Location cards — equal height, pointer-events on whole card */
+#placementModal .pl-loc-grid     { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+#placementModal .pl-loc-card     {
+    display:flex;align-items:center;gap:10px;
+    padding:12px 14px;
+    border:2px solid var(--border);
+    border-radius:var(--r-sm);
+    cursor:pointer;
+    transition:border-color .15s,background .15s;
+    min-height:60px;
+    user-select:none;
+}
+#placementModal .pl-loc-icon     { width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+#placementModal .pl-loc-title    { font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2; }
+#placementModal .pl-loc-sub      { font-size:10px;color:var(--text-muted);margin-top:2px; }
+
+/* Duration badge */
+#placementModal .pl-dur-badge    {
+    display:none;align-items:center;gap:8px;
+    background:rgba(22,163,74,0.08);
+    border:1px solid rgba(22,163,74,0.18);
+    border-radius:var(--r-sm);
+    padding:9px 12px;
+    margin-top:8px;
+}
+#placementModal .pl-dur-text     { font-size:12px;font-weight:600;color:var(--green); }
+
+/* Quick-pick buttons — uniform size */
+#placementModal .pl-quick-wrap   { display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap; }
+#placementModal .pl-quick-label  { font-size:10px;color:var(--text-muted); }
+#placementModal .pl-quick-btn    {
+    font-size:11px;font-weight:600;
+    padding:4px 11px;
+    border:1px solid var(--border);
+    border-radius:5px;
+    background:var(--surface-muted);
+    color:var(--text-secondary);
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    transition:border-color .12s,color .12s,background .12s;
+    line-height:1.6;
+}
+#placementModal .pl-quick-btn:hover { border-color:var(--primary);color:var(--primary);background:var(--primary-dim); }
+
+/* Drop zone */
+#placementModal .pl-drop-zone    {
+    border:2px dashed var(--border);
+    border-radius:var(--r-lg);
+    cursor:pointer;
+    transition:border-color .2s,background .2s;
+    min-height:110px;
+    display:flex;align-items:center;justify-content:center;
+}
+#placementModal .pl-drop-zone:hover { border-color:rgba(37,99,235,0.4);background:var(--primary-dim); }
+#placementModal .pl-drop-idle    { display:flex;flex-direction:column;align-items:center;gap:6px;padding:24px 16px;width:100%; }
+#placementModal .pl-drop-preview { display:none;align-items:center;gap:12px;padding:16px 18px;width:100%; }
+
+/* Footer — always equal-width buttons, no layout shift */
+#placementModal .pl-footer-btns  { display:flex;gap:8px;width:100%; }
+#placementModal .pl-footer-btns > button { flex:1;justify-content:center; }
+</style>
+
 <div id="placementModal" class="modal-backdrop">
     <div class="modal-box" style="max-width:560px;width:100%">
 
-        {{-- Header --}}
-        <div class="modal-hdr" style="display:flex;align-items:center;justify-content:space-between">
-            <div style="display:flex;align-items:center;gap:11px">
-                <div class="stat-icon" style="background:var(--green-light);width:34px;height:34px;margin:0;border-radius:9px">
-                    <i data-lucide="user-check" style="width:15px;height:15px;color:var(--green)"></i>
+        {{-- ── Header ── --}}
+        <div class="modal-hdr">
+            <div style="display:flex;align-items:center;gap:12px">
+                <div class="stat-icon" style="background:rgba(22,163,74,0.1);width:36px;height:36px;margin:0;border-radius:10px;border:1px solid rgba(22,163,74,0.15)">
+                    <i data-lucide="user-check" style="width:16px;height:16px;color:var(--green)"></i>
                 </div>
                 <div>
-                    <div style="font-size:14px;font-weight:700;color:var(--text-primary)">Konfirmasi Penerimaan</div>
-                    <div id="placement-subtitle" style="font-size:11px;color:var(--text-muted);margin-top:1px">—</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--text-primary);line-height:1.2">Konfirmasi Penerimaan</div>
+                    <div id="placement-subtitle" style="font-size:11px;color:var(--text-muted);margin-top:2px">—</div>
                 </div>
             </div>
-            <button onclick="closePlacementModal()" class="btn-icon">
+            <button onclick="closePlacementModal()" class="btn-icon" title="Tutup">
                 <i data-lucide="x" style="width:14px;height:14px"></i>
             </button>
         </div>
 
-        <div class="modal-body" style="display:flex;flex-direction:column;gap:18px">
+        <div class="modal-body" style="display:flex;flex-direction:column;gap:20px">
 
-            {{-- Step indicator --}}
-            <div style="display:flex;align-items:center;gap:0">
-                <div id="step-ind-1" style="display:flex;align-items:center;gap:7px;flex:1">
-                    <div style="width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">1</div>
-                    <span style="font-size:11px;font-weight:600;color:var(--accent)">Penempatan & Durasi</span>
+            {{-- ── Step Indicator ── --}}
+            <div class="pl-step-wrap">
+                <div id="pl-step-1" class="pl-step active">
+                    <div class="pl-step-num">1</div>
+                    <span class="pl-step-label">Penempatan &amp; Durasi</span>
                 </div>
-                <div class="step-line"></div>
-                <div id="step-ind-2" style="display:flex;align-items:center;gap:7px">
-                    <div id="step2-circle" style="width:24px;height:24px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text-muted);flex-shrink:0">2</div>
-                    <span id="step2-label" style="font-size:11px;font-weight:600;color:var(--text-muted)">Surat Balasan</span>
+                <div class="pl-step-line"></div>
+                <div id="pl-step-2" class="pl-step inactive">
+                    <div id="step2-circle" class="pl-step-num">2</div>
+                    <span id="step2-label" class="pl-step-label">Surat Balasan</span>
                 </div>
             </div>
 
             {{-- ══ STEP 1: Penempatan & Durasi ══ --}}
-            <div id="placement-step-1" style="display:flex;flex-direction:column;gap:14px">
+            <div id="placement-step-1" style="display:flex;flex-direction:column;gap:16px">
 
                 {{-- Unit / Divisi --}}
-                <div>
-                    <label class="form-label">Unit / Divisi Penempatan <span style="color:var(--red)">*</span></label>
-                    <select id="placement-lokasi" class="form-input">
+                <div class="pl-field">
+                    <label class="pl-field-label">
+                        Unit / Divisi Penempatan <span class="req">*</span>
+                    </label>
+                    <select id="placement-lokasi" class="form-input pl-select-arrow">
                         <option value="">— Pilih Unit Penempatan —</option>
                         <option value="Aviation Security (AVSEC)">Aviation Security (AVSEC)</option>
                         <option value="Terminal Inspector">Terminal Inspector</option>
                         <option value="Information Technology (IT)">Information Technology (IT)</option>
                         <option value="Customer Service">Customer Service</option>
                         <option value="Human Capital">Human Capital</option>
-                        <option value="Cargo & Logistics">Cargo & Logistics</option>
-                        <option value="Finance & Accounting">Finance & Accounting</option>
-                        <option value="Legal & Compliance">Legal & Compliance</option>
-                        <option value="Engineering & Maintenance">Engineering & Maintenance</option>
+                        <option value="Cargo & Logistics">Cargo &amp; Logistics</option>
+                        <option value="Finance & Accounting">Finance &amp; Accounting</option>
+                        <option value="Legal & Compliance">Legal &amp; Compliance</option>
+                        <option value="Engineering & Maintenance">Engineering &amp; Maintenance</option>
                     </select>
                 </div>
 
-                {{-- Lokasi kerja --}}
-                <div>
-                    <label class="form-label">Lokasi Kerja <span style="color:var(--red)">*</span></label>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                        <label id="loc-kantor-card" onclick="selectLocation('kantor')"
-                            style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s">
-                            <div style="width:32px;height:32px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                                <i data-lucide="building-2" style="width:14px;height:14px;color:var(--accent)"></i>
+                {{-- Lokasi Kerja --}}
+                <div class="pl-field">
+                    <label class="pl-field-label">
+                        Lokasi Kerja <span class="req">*</span>
+                    </label>
+                    <div class="pl-loc-grid">
+                        <div id="loc-kantor-card" class="pl-loc-card" onclick="selectLocation('kantor')">
+                            <div class="pl-loc-icon" style="background:var(--accent-light)">
+                                <i data-lucide="building-2" style="width:15px;height:15px;color:var(--accent)"></i>
                             </div>
                             <div>
-                                <div style="font-size:12px;font-weight:700;color:var(--text-primary)">Head Office</div>
-                                <div style="font-size:10px;color:var(--text-muted)">Kantor Pusat</div>
+                                <div class="pl-loc-title">Head Office</div>
+                                <div class="pl-loc-sub">Kantor Pusat</div>
                             </div>
-                        </label>
-                        <label id="loc-terminal-card" onclick="selectLocation('terminal')"
-                            style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s">
-                            <div style="width:32px;height:32px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                                <i data-lucide="plane" style="width:14px;height:14px;color:var(--teal)"></i>
+                        </div>
+                        <div id="loc-terminal-card" class="pl-loc-card" onclick="selectLocation('terminal')">
+                            <div class="pl-loc-icon" style="background:var(--teal-dim)">
+                                <i data-lucide="plane" style="width:15px;height:15px;color:var(--teal)"></i>
                             </div>
                             <div>
-                                <div style="font-size:12px;font-weight:700;color:var(--text-primary)">Terminal Ops</div>
-                                <div style="font-size:10px;color:var(--text-muted)">Operasional Bandara</div>
+                                <div class="pl-loc-title">Terminal Ops</div>
+                                <div class="pl-loc-sub">Operasional Bandara</div>
                             </div>
-                        </label>
+                        </div>
                     </div>
                     <input type="hidden" id="placement-location-val">
                 </div>
 
                 {{-- Masa Magang --}}
-                <div>
-                    <label class="form-label">Masa Magang <span style="color:var(--red)">*</span></label>
-                    <div class="form-row" style="margin-bottom:8px">
-                        <div>
-                            <div class="form-section-label">Tanggal Mulai</div>
+                <div class="pl-field">
+                    <label class="pl-field-label">
+                        Masa Magang <span class="req">*</span>
+                    </label>
+
+                    {{-- Date row --}}
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                        <div class="pl-field" style="gap:4px">
+                            <span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)">Tanggal Mulai</span>
                             <input type="date" id="placement-start" class="form-input" onchange="plUpdateDurationInfo()">
                         </div>
-                        <div>
-                            <div class="form-section-label">Tanggal Selesai</div>
+                        <div class="pl-field" style="gap:4px">
+                            <span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)">Tanggal Selesai</span>
                             <input type="date" id="placement-end" class="form-input" onchange="plUpdateDurationInfo()">
                         </div>
                     </div>
 
                     {{-- Duration badge --}}
-                    <div id="duration-badge" style="display:none;background:var(--green-light);border:1px solid rgba(34,197,94,0.2);border-radius:var(--r-sm);padding:8px 12px;align-items:center;gap:8px">
+                    <div id="duration-badge" class="pl-dur-badge">
                         <i data-lucide="calendar-check" style="width:13px;height:13px;color:var(--green);flex-shrink:0"></i>
-                        <span id="duration-text" style="font-size:12px;font-weight:600;color:var(--green)"></span>
+                        <span id="duration-text" class="pl-dur-text"></span>
                     </div>
 
-                    {{-- Pilihan cepat durasi --}}
-                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center">
-                        <span style="font-size:10px;color:var(--text-muted)">Cepat:</span>
-                        @foreach([1=>'1 Bln', 2=>'2 Bln', 3=>'3 Bln', 6=>'6 Bln'] as $m => $label)
-                        <button type="button" onclick="setDuration({{ $m }})"
-                            style="font-size:10.5px;padding:3px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text-secondary);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif"
-                            onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
-                            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
-                            {{ $label }}
-                        </button>
+                    {{-- Quick-pick durasi --}}
+                    <div class="pl-quick-wrap">
+                        <span class="pl-quick-label">Pilih cepat:</span>
+                        @foreach([1=>'1 Bln', 2=>'2 Bln', 3=>'3 Bln', 6=>'6 Bln'] as $m => $lbl)
+                        <button type="button" class="pl-quick-btn" onclick="setDuration({{ $m }})">{{ $lbl }}</button>
                         @endforeach
                     </div>
                 </div>
@@ -117,64 +215,69 @@
             </div>
 
             {{-- ══ STEP 2: Upload Surat Balasan ══ --}}
-            <div id="placement-step-2" style="display:none;flex-direction:column;gap:14px">
+            <div id="placement-step-2" style="display:none;flex-direction:column;gap:16px">
 
                 <div class="info-box">
                     <i data-lucide="info" style="width:14px;height:14px;color:var(--accent);flex-shrink:0;margin-top:1px"></i>
-                    <div style="font-size:12px;line-height:1.65">
+                    <div style="font-size:12px;line-height:1.65;color:var(--text-secondary)">
                         Upload surat balasan resmi sebagai bukti penerimaan magang.
                         File akan dapat diakses peserta melalui portal mereka.
                     </div>
                 </div>
 
                 {{-- Drop Zone --}}
-                <div id="pl-drop-zone"
+                <div id="pl-drop-zone" class="pl-drop-zone"
                     onclick="document.getElementById('pl-file-input').click()"
-                    ondragover="plDragOver(event)" ondragleave="plDragLeave(event)" ondrop="plDrop(event)"
-                    style="border:2px dashed rgba(255,255,255,0.1);border-radius:var(--r-lg);padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s">
+                    ondragover="plDragOver(event)" ondragleave="plDragLeave(event)" ondrop="plDrop(event)">
                     <input type="file" id="pl-file-input" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="plFileSelect(event)">
-                    <div id="pl-drop-idle">
-                        <div style="width:44px;height:44px;border-radius:12px;background:var(--accent-light);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+
+                    {{-- Idle state --}}
+                    <div id="pl-drop-idle" class="pl-drop-idle">
+                        <div style="width:44px;height:44px;border-radius:12px;background:var(--accent-light);border:1px solid var(--primary-mid);display:flex;align-items:center;justify-content:center">
                             <i data-lucide="file-up" style="width:20px;height:20px;color:var(--accent)"></i>
                         </div>
-                        <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px">Klik atau seret file ke sini</div>
+                        <div style="font-size:13px;font-weight:600;color:var(--text-primary)">Klik atau seret file ke sini</div>
                         <div style="font-size:11px;color:var(--text-muted)">PDF, JPG, PNG · Maks. 5 MB</div>
                     </div>
-                    <div id="pl-drop-preview" style="display:none;align-items:center;gap:12px">
-                        <div style="width:38px;height:38px;border-radius:10px;background:var(--accent-light);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                            <i data-lucide="file-check" style="width:17px;height:17px;color:var(--accent)"></i>
+
+                    {{-- Preview state --}}
+                    <div id="pl-drop-preview" class="pl-drop-preview">
+                        <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-light);border:1px solid var(--primary-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            <i data-lucide="file-check" style="width:18px;height:18px;color:var(--accent)"></i>
                         </div>
-                        <div style="flex:1;text-align:left;min-width:0">
-                            <div id="pl-file-name" style="font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-                            <div id="pl-file-size" style="font-size:10px;color:var(--text-muted);margin-top:2px"></div>
+                        <div style="flex:1;min-width:0">
+                            <div id="pl-file-name" style="font-size:12.5px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+                            <div id="pl-file-size" style="font-size:10.5px;color:var(--text-muted);margin-top:3px"></div>
                         </div>
-                        <button type="button" onclick="plClearFile(event)" class="btn-icon danger" style="flex-shrink:0">
+                        <button type="button" onclick="plClearFile(event)" class="btn-icon danger" title="Hapus file" style="flex-shrink:0">
                             <i data-lucide="x" style="width:12px;height:12px"></i>
                         </button>
                     </div>
                 </div>
 
-                <div style="text-align:center">
-                    <span style="font-size:11px;color:var(--text-muted)">Upload surat bisa dilakukan nanti melalui tabel kandidat</span>
-                </div>
+                <p style="font-size:11px;color:var(--text-muted);text-align:center;margin:0">
+                    Upload surat bisa dilakukan nanti melalui tabel kandidat
+                </p>
 
             </div>
 
         </div>
 
-        {{-- Footer --}}
+        {{-- ── Footer ── --}}
         <div class="modal-ftr">
-            <button id="pl-btn-back" onclick="goPlacementStep(1)" class="btn-ghost" style="display:none;flex:1;justify-content:center">
-                <i data-lucide="arrow-left" style="width:13px;height:13px"></i> Kembali
-            </button>
-            <button onclick="closePlacementModal()" id="pl-btn-cancel" class="btn-ghost" style="flex:1;justify-content:center">Batal</button>
-            <button id="pl-btn-next" onclick="goPlacementStep(2)" class="btn-primary" style="flex:1;justify-content:center">
-                Lanjut <i data-lucide="arrow-right" style="width:13px;height:13px"></i>
-            </button>
-            <button id="pl-btn-submit" onclick="submitPlacement()" class="btn-primary" style="display:none;flex:1;justify-content:center">
-                <i data-lucide="check" style="width:13px;height:13px"></i>
-                <span id="pl-submit-label">Terima & Simpan</span>
-            </button>
+            <div class="pl-footer-btns">
+                <button id="pl-btn-back"   onclick="goPlacementStep(1)" class="btn-ghost"   style="display:none">
+                    <i data-lucide="arrow-left" style="width:13px;height:13px"></i> Kembali
+                </button>
+                <button id="pl-btn-cancel" onclick="closePlacementModal()" class="btn-ghost">Batal</button>
+                <button id="pl-btn-next"   onclick="goPlacementStep(2)" class="btn-primary">
+                    Lanjut <i data-lucide="arrow-right" style="width:13px;height:13px"></i>
+                </button>
+                <button id="pl-btn-submit" onclick="submitPlacement()" class="btn-primary" style="display:none">
+                    <i data-lucide="check" style="width:13px;height:13px"></i>
+                    <span id="pl-submit-label">Terima &amp; Simpan</span>
+                </button>
+            </div>
         </div>
 
     </div>
@@ -185,7 +288,7 @@ var _plApplicantId   = null;
 var _plApplicantName = null;
 var _plSelectedFile  = null;
 
-// ── OPEN / CLOSE ─────────────────────────────────────
+// ── OPEN / CLOSE ─────────────────────────────────────────────
 function openPlacementModal(id, name) {
     _plApplicantId   = id;
     _plApplicantName = name || 'Kandidat';
@@ -193,8 +296,8 @@ function openPlacementModal(id, name) {
     var sub = document.getElementById('placement-subtitle');
     if (sub) sub.textContent = 'Peserta: ' + _plApplicantName;
 
-    goPlacementStep(1);
     resetPlacementForm();
+    goPlacementStep(1);
 
     var modal = document.getElementById('placementModal');
     if (modal) modal.classList.add('open');
@@ -208,114 +311,115 @@ function closePlacementModal() {
 }
 
 function resetPlacementForm() {
-    var el;
-    ['placement-lokasi','placement-start','placement-end'].forEach(function(id) {
-        el = document.getElementById(id); if (el) el.value = '';
+    ['placement-lokasi', 'placement-start', 'placement-end'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
     });
-    el = document.getElementById('placement-location-val'); if (el) el.value = '';
+    var hidden = document.getElementById('placement-location-val');
+    if (hidden) hidden.value = '';
     selectLocation(null);
     plUpdateDurationInfo();
     plResetFile();
     _plSelectedFile = null;
 }
 
-// ── STEP NAVIGATION ───────────────────────────────────
+// ── STEP NAVIGATION ───────────────────────────────────────────
 function goPlacementStep(step) {
-    var s1 = document.getElementById('placement-step-1');
-    var s2 = document.getElementById('placement-step-2');
+    var s1        = document.getElementById('placement-step-1');
+    var s2        = document.getElementById('placement-step-2');
     var btnBack   = document.getElementById('pl-btn-back');
     var btnCancel = document.getElementById('pl-btn-cancel');
     var btnNext   = document.getElementById('pl-btn-next');
     var btnSubmit = document.getElementById('pl-btn-submit');
-    var c1 = document.getElementById('step2-circle');
-    var l1 = document.getElementById('step2-label');
+    var step1ind  = document.getElementById('pl-step-1');
+    var step2ind  = document.getElementById('pl-step-2');
 
     if (step === 1) {
-        s1.style.display   = 'flex'; s1.style.flexDirection = 'column';
-        s2.style.display   = 'none';
-        btnBack.style.display   = 'none';
-        btnCancel.style.display = '';
-        btnNext.style.display   = '';
-        btnSubmit.style.display = 'none';
-        if (c1) { c1.style.background = 'var(--border)'; c1.style.color = 'var(--text-muted)'; }
-        if (l1) l1.style.color = 'var(--text-muted)';
+        if (s1) { s1.style.display = 'flex'; s1.style.flexDirection = 'column'; }
+        if (s2)   s2.style.display = 'none';
+        if (btnBack)   btnBack.style.display   = 'none';
+        if (btnCancel) btnCancel.style.display = '';
+        if (btnNext)   btnNext.style.display   = '';
+        if (btnSubmit) btnSubmit.style.display = 'none';
+        if (step1ind) { step1ind.className = 'pl-step active'; }
+        if (step2ind) { step2ind.className = 'pl-step inactive'; }
     } else {
-        // Validate step 1 before proceeding
         if (!validateStep1()) return;
-        s1.style.display   = 'none';
-        s2.style.display   = 'flex'; s2.style.flexDirection = 'column';
-        btnBack.style.display   = '';
-        btnCancel.style.display = 'none';
-        btnNext.style.display   = 'none';
-        btnSubmit.style.display = '';
-        if (c1) { c1.style.background = 'var(--accent)'; c1.style.color = '#fff'; }
-        if (l1) l1.style.color = 'var(--accent)';
+        if (s1)   s1.style.display = 'none';
+        if (s2) { s2.style.display = 'flex'; s2.style.flexDirection = 'column'; }
+        if (btnBack)   btnBack.style.display   = '';
+        if (btnCancel) btnCancel.style.display = 'none';
+        if (btnNext)   btnNext.style.display   = 'none';
+        if (btnSubmit) btnSubmit.style.display = '';
+        if (step1ind) { step1ind.className = 'pl-step inactive'; }
+        if (step2ind) { step2ind.className = 'pl-step active'; }
     }
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function validateStep1() {
-    var lokasi   = document.getElementById('placement-lokasi').value;
-    var location = document.getElementById('placement-location-val').value;
-    var start    = document.getElementById('placement-start').value;
-    var end      = document.getElementById('placement-end').value;
+    var lokasi   = (document.getElementById('placement-lokasi') || {}).value;
+    var location = (document.getElementById('placement-location-val') || {}).value;
+    var start    = (document.getElementById('placement-start') || {}).value;
+    var end      = (document.getElementById('placement-end') || {}).value;
 
-    if (!lokasi)   { showToast('Validasi', 'Pilih unit/divisi penempatan.', 'error'); return false; }
-    if (!location) { showToast('Validasi', 'Pilih lokasi kerja (Head Office / Terminal Ops).', 'error'); return false; }
-    if (!start)    { showToast('Validasi', 'Tanggal mulai magang wajib diisi.', 'error'); return false; }
-    if (!end)      { showToast('Validasi', 'Tanggal selesai magang wajib diisi.', 'error'); return false; }
-    if (end <= start) { showToast('Validasi', 'Tanggal selesai harus setelah tanggal mulai.', 'error'); return false; }
+    if (!lokasi)        { showToast('Validasi', 'Pilih unit/divisi penempatan.', 'error'); return false; }
+    if (!location)      { showToast('Validasi', 'Pilih lokasi kerja (Head Office / Terminal Ops).', 'error'); return false; }
+    if (!start)         { showToast('Validasi', 'Tanggal mulai magang wajib diisi.', 'error'); return false; }
+    if (!end)           { showToast('Validasi', 'Tanggal selesai magang wajib diisi.', 'error'); return false; }
+    if (end <= start)   { showToast('Validasi', 'Tanggal selesai harus setelah tanggal mulai.', 'error'); return false; }
     return true;
 }
 
-// ── LOCATION SELECTOR ────────────────────────────────
+// ── LOCATION SELECTOR ─────────────────────────────────────────
 function selectLocation(val) {
     var kantor   = document.getElementById('loc-kantor-card');
     var terminal = document.getElementById('loc-terminal-card');
     var hidden   = document.getElementById('placement-location-val');
     if (!kantor || !terminal) return;
 
-    kantor.style.borderColor   = (val === 'kantor')   ? 'var(--accent)' : 'var(--border)';
-    terminal.style.borderColor = (val === 'terminal') ? 'var(--accent)' : 'var(--border)';
+    kantor.style.borderColor   = (val === 'kantor')   ? 'var(--primary)' : 'var(--border)';
     kantor.style.background    = (val === 'kantor')   ? 'var(--accent-light)' : '';
-    terminal.style.background  = (val === 'terminal') ? 'var(--teal-light)' : '';
+    terminal.style.borderColor = (val === 'terminal') ? 'var(--teal)' : 'var(--border)';
+    terminal.style.background  = (val === 'terminal') ? 'var(--teal-dim)' : '';
     if (hidden) hidden.value = val || '';
 }
 
-// ── DURATION HELPERS ──────────────────────────────────
+// ── DURATION HELPERS ──────────────────────────────────────────
 function setDuration(months) {
     var startEl = document.getElementById('placement-start');
+    if (!startEl) return;
     if (!startEl.value) {
-        var today = new Date();
-        startEl.value = today.toISOString().split('T')[0];
+        startEl.value = new Date().toISOString().split('T')[0];
     }
-    var start = new Date(startEl.value);
-    start.setMonth(start.getMonth() + months);
-    document.getElementById('placement-end').value = start.toISOString().split('T')[0];
+    var d = new Date(startEl.value);
+    d.setMonth(d.getMonth() + months);
+    var endEl = document.getElementById('placement-end');
+    if (endEl) endEl.value = d.toISOString().split('T')[0];
     plUpdateDurationInfo();
 }
 
 function plUpdateDurationInfo() {
-    var start = document.getElementById('placement-start').value;
-    var end   = document.getElementById('placement-end').value;
+    var start = (document.getElementById('placement-start') || {}).value;
+    var end   = (document.getElementById('placement-end')   || {}).value;
     var badge = document.getElementById('duration-badge');
     var text  = document.getElementById('duration-text');
     if (!badge || !text) return;
 
     if (start && end && end > start) {
-        var ms      = new Date(end) - new Date(start);
-        var days    = Math.round(ms / 86400000);
-        var months  = Math.floor(days / 30);
-        var weeks   = Math.floor((days % 30) / 7);
-        var parts   = [];
+        var ms     = new Date(end) - new Date(start);
+        var days   = Math.round(ms / 86400000);
+        var months = Math.floor(days / 30);
+        var weeks  = Math.floor((days % 30) / 7);
+        var parts  = [];
         if (months > 0) parts.push(months + ' bulan');
         if (weeks  > 0) parts.push(weeks  + ' minggu');
-        if (parts.length === 0) parts.push(days + ' hari');
+        if (!parts.length) parts.push(days + ' hari');
 
-        var opts = { day:'numeric', month:'short', year:'numeric' };
+        var opts     = { day:'numeric', month:'short', year:'numeric' };
         var startFmt = new Date(start).toLocaleDateString('id-ID', opts);
         var endFmt   = new Date(end).toLocaleDateString('id-ID', opts);
-        text.textContent = parts.join(' ') + ' · ' + startFmt + ' – ' + endFmt;
+        text.textContent    = parts.join(' ') + '  ·  ' + startFmt + ' – ' + endFmt;
         badge.style.display = 'flex';
     } else {
         badge.style.display = 'none';
@@ -323,27 +427,40 @@ function plUpdateDurationInfo() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// ── FILE UPLOAD (STEP 2) ──────────────────────────────
-function plDragOver(e)  { e.preventDefault(); document.getElementById('pl-drop-zone').style.borderColor = 'rgba(59,130,246,0.5)'; }
-function plDragLeave(e) { document.getElementById('pl-drop-zone').style.borderColor = 'rgba(255,255,255,0.1)'; }
+// ── DROP ZONE ─────────────────────────────────────────────────
+function plDragOver(e) {
+    e.preventDefault();
+    var dz = document.getElementById('pl-drop-zone');
+    if (dz) { dz.style.borderColor = 'var(--primary)'; dz.style.background = 'var(--primary-dim)'; }
+}
+function plDragLeave(e) {
+    var dz = document.getElementById('pl-drop-zone');
+    if (dz) { dz.style.borderColor = 'var(--border)'; dz.style.background = ''; }
+}
 function plDrop(e) {
     e.preventDefault();
-    document.getElementById('pl-drop-zone').style.borderColor = 'rgba(255,255,255,0.1)';
+    plDragLeave(e);
     var files = e.dataTransfer && e.dataTransfer.files;
     if (files && files.length > 0) plSetFile(files[0]);
 }
-function plFileSelect(e) { if (e.target.files && e.target.files[0]) plSetFile(e.target.files[0]); }
+function plFileSelect(e) {
+    if (e.target.files && e.target.files[0]) plSetFile(e.target.files[0]);
+}
 
 function plSetFile(file) {
-    var allowed = ['application/pdf','image/jpeg','image/jpg','image/png'];
+    var allowed = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
     if (allowed.indexOf(file.type) === -1) { showToast('Format Salah', 'Hanya PDF, JPG, atau PNG.', 'error'); return; }
     if (file.size > 5 * 1024 * 1024)       { showToast('File Terlalu Besar', 'Maks. 5 MB.', 'error'); return; }
 
     _plSelectedFile = file;
-    document.getElementById('pl-drop-idle').style.display    = 'none';
-    document.getElementById('pl-drop-preview').style.display = 'flex';
-    document.getElementById('pl-file-name').textContent = file.name;
-    document.getElementById('pl-file-size').textContent = plFmtSize(file.size);
+    var idle = document.getElementById('pl-drop-idle');
+    var prev = document.getElementById('pl-drop-preview');
+    if (idle) idle.style.display = 'none';
+    if (prev) prev.style.display = 'flex';
+    var nameEl = document.getElementById('pl-file-name');
+    var sizeEl = document.getElementById('pl-file-size');
+    if (nameEl) nameEl.textContent = file.name;
+    if (sizeEl) sizeEl.textContent = plFmtSize(file.size);
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
     var label = document.getElementById('pl-submit-label');
@@ -356,62 +473,57 @@ function plClearFile(e) {
 }
 function plResetFile() {
     _plSelectedFile = null;
-    var inp = document.getElementById('pl-file-input'); if (inp) inp.value = '';
-    var idle = document.getElementById('pl-drop-idle'); if (idle) idle.style.display = 'block';
+    var inp  = document.getElementById('pl-file-input');  if (inp)  inp.value = '';
+    var idle = document.getElementById('pl-drop-idle');   if (idle) idle.style.display = 'flex';
     var prev = document.getElementById('pl-drop-preview'); if (prev) prev.style.display = 'none';
-    var dz   = document.getElementById('pl-drop-zone'); if (dz) dz.style.borderColor = 'rgba(255,255,255,0.1)';
+    var dz   = document.getElementById('pl-drop-zone');
+    if (dz) { dz.style.borderColor = ''; dz.style.background = ''; }
     var label = document.getElementById('pl-submit-label');
     if (label) label.textContent = 'Terima & Simpan';
 }
 
 function plFmtSize(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
-    return (bytes/1048576).toFixed(1) + ' MB';
+    if (bytes < 1024)    return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
 }
 
-// ── SUBMIT ─────────────────────────────────────────────
+// ── SUBMIT ────────────────────────────────────────────────────
 async function submitPlacement() {
     if (!_plApplicantId) return;
 
     var btn   = document.getElementById('pl-btn-submit');
     var label = document.getElementById('pl-submit-label');
-    if (btn) btn.disabled = true;
+    if (btn)   btn.disabled = true;
     if (label) label.textContent = 'Menyimpan...';
 
-    var lokasi   = document.getElementById('placement-lokasi').value;
-    var location = document.getElementById('placement-location-val').value;
-    var start    = document.getElementById('placement-start').value;
-    var end      = document.getElementById('placement-end').value;
+    var lokasi   = (document.getElementById('placement-lokasi')        || {}).value;
+    var location = (document.getElementById('placement-location-val')  || {}).value;
+    var start    = (document.getElementById('placement-start')         || {}).value;
+    var end      = (document.getElementById('placement-end')           || {}).value;
     var base     = (window.APP_CONFIG && window.APP_CONFIG.apiBaseUrl) ? window.APP_CONFIG.apiBaseUrl : '/api';
 
     try {
-        // Step 1: Update status + penempatan + periode
         var res = await fetch(base + '/applicants/' + _plApplicantId, {
             method : 'PUT',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
             body   : JSON.stringify({
-                status             : 'accepted',
-                location           : location,
-                lokasi_penempatan  : lokasi,
-                internship_start   : start,
-                internship_end     : end,
+                status            : 'accepted',
+                location          : location,
+                lokasi_penempatan : lokasi,
+                internship_start  : start,
+                internship_end    : end,
             }),
         });
 
         if (!res.ok) {
-            var err = await res.json();
-            showToast('Gagal', err.message || 'Terjadi kesalahan.', 'error');
-            if (btn) btn.disabled = false;
+            var err = await res.json().catch(function() { return {}; });
+            showToast('Gagal', err.message || 'Terjadi kesalahan saat menyimpan.', 'error');
+            if (btn)   btn.disabled = false;
             if (label) label.textContent = 'Terima & Simpan';
             return;
         }
 
-        // Step 2: Upload surat balasan jika ada
-        // FIX BUG: sebelumnya hasil fetch ini tidak pernah dicek (res.ok),
-        // jadi kalau upload gagal di server, admin tetap melihat toast
-        // "Berhasil" padahal file tidak pernah tersimpan dan klien tidak
-        // akan pernah melihat surat balasannya.
         var letterUploaded = false;
         if (_plSelectedFile) {
             if (label) label.textContent = 'Mengupload surat...';
@@ -422,14 +534,13 @@ async function submitPlacement() {
                 headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body   : fd,
             });
-
             if (letterRes.ok) {
                 letterUploaded = true;
             } else {
-                var letterErr = await letterRes.json().catch(function () { return {}; });
+                var letterErr = await letterRes.json().catch(function() { return {}; });
                 showToast(
                     'Status Disimpan, Surat Gagal',
-                    'Status penerimaan tersimpan, tapi surat balasan gagal diupload: ' + (letterErr.message || ('HTTP ' + letterRes.status)) + '. Coba upload ulang dari tabel kandidat.',
+                    'Status tersimpan, tapi surat gagal diupload: ' + (letterErr.message || 'HTTP ' + letterRes.status) + '. Upload ulang dari tabel kandidat.',
                     'error'
                 );
             }
@@ -437,15 +548,18 @@ async function submitPlacement() {
 
         var ms      = new Date(end) - new Date(start);
         var months  = Math.round(ms / 86400000 / 30);
-        var durText = months > 0 ? months + ' bulan' : Math.round(ms/86400000) + ' hari';
-        showToast('Berhasil Diterima! 🎉', _plApplicantName + ' diterima · ' + durText + (letterUploaded ? ' · Surat terupload' : ''), 'success');
+        var durText = months > 0 ? months + ' bulan' : Math.round(ms / 86400000) + ' hari';
+        showToast('Berhasil Diterima! 🎉',
+            _plApplicantName + ' diterima · ' + durText + (letterUploaded ? ' · Surat terupload' : ''),
+            'success'
+        );
 
         closePlacementModal();
         if (typeof loadData === 'function') loadData();
 
-    } catch(e) {
+    } catch (e) {
         showToast('Error', 'Gagal menghubungi server.', 'error');
-        if (btn) btn.disabled = false;
+        if (btn)   btn.disabled = false;
         if (label) label.textContent = 'Terima & Simpan';
     }
 }

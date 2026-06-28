@@ -40,7 +40,7 @@ function switchView(view) {
 
         const nav = document.getElementById(`nav-${v}`);
         if (nav) {
-            nav.className = 'nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all';
+            nav.classList.remove('active');
         }
     });
 
@@ -49,7 +49,7 @@ function switchView(view) {
 
     const activeNav = document.getElementById(`nav-${view}`);
     if (activeNav) {
-        activeNav.className = 'nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-sky-700 bg-sky-50 transition-all';
+        activeNav.classList.add('active');
     }
 
     const titles = {
@@ -340,6 +340,13 @@ function renderTable() {
     animateValue('stat-kantor', 0, stats.kantor, 500);
     animateValue('stat-terminal', 0, stats.terminal, 500);
 
+    // Sync mini-stat strip di halaman Kandidat
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setEl('cand-stat-total', stats.total);
+    setEl('cand-stat-pending', stats.pending);
+    setEl('cand-stat-accepted', stats.kantor + stats.terminal);
+    setEl('cand-stat-rejected', applicants.filter(a => a.status === 'rejected').length);
+
     const emptyState = document.getElementById('empty-state');
 
     if (filtered.length === 0) {
@@ -348,72 +355,133 @@ function renderTable() {
         if (emptyState) emptyState.style.display = 'none';
 
         filtered.sort((a, b) => b.id - a.id).forEach((a, i) => {
-                    // Ambil inisial nama
+                    // Inisial nama
                     const initials = a.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
-                    // Badge Status Tailwind
+                    // Badge Status
                     let badge = '';
-                    if (a.status === 'pending') badge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-200"><i data-lucide="clock" class="w-3 h-3"></i> Pending</span>`;
-                    else if (a.status === 'accepted') badge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Diterima</span>`;
-                    else badge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200"><i data-lucide="x-circle" class="w-3 h-3"></i> Ditolak</span>`;
+                    if (a.status === 'pending')
+                        badge = `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;white-space:nowrap;">
+                    <i data-lucide="clock" style="width:12px;height:12px;"></i> Menunggu
+                </span>`;
+                    else if (a.status === 'accepted')
+                        badge = `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;white-space:nowrap;">
+                    <i data-lucide="check-circle-2" style="width:12px;height:12px;"></i> Diterima
+                </span>`;
+                    else
+                        badge = `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;white-space:nowrap;">
+                    <i data-lucide="x-circle" style="width:12px;height:12px;"></i> Ditolak
+                </span>`;
 
-                    // Lokasi
-                    let locText = '<span class="text-slate-300 font-bold">—</span>';
-                    if (a.location === 'kantor' || a.location === 'Kantor Pusat') locText = '<span class="inline-flex items-center gap-1.5 font-bold text-slate-700 text-xs"><i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400"></i> Head Office</span>';
-                    else if (a.location === 'terminal' || a.location === 'Terminal Ops') locText = '<span class="inline-flex items-center gap-1.5 font-bold text-slate-700 text-xs"><i data-lucide="plane" class="w-3.5 h-3.5 text-slate-400"></i> Terminal Ops</span>';
-
-                    if (a.status === 'accepted' && a.internship_start && a.internship_end) {
-                        const s = new Date(a.internship_start).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-                        const e = new Date(a.internship_end).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-                        locText += `<div class="text-[10px] text-slate-500 mt-1">📅 ${s} – ${e}</div>`;
+                    // Penempatan — kosong jika belum ada, tanpa tanda "—"
+                    let locHTML = '';
+                    const isKantor = a.location === 'kantor' || a.location === 'Kantor Pusat';
+                    const isTerminal = a.location === 'terminal' || a.location === 'Terminal Ops';
+                    if (isKantor) {
+                        locHTML = `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;background:#F5F3FF;color:#7C3AED;border:1px solid rgba(124,58,237,.15);">
+                    <i data-lucide="building-2" style="width:11px;height:11px;"></i> Head Office
+                </span>`;
+                        if (a.internship_start && a.internship_end) {
+                            const s = new Date(a.internship_start).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                            const e = new Date(a.internship_end).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                            locHTML += `<div style="font-size:10px;color:#94A3B8;margin-top:4px;">📅 ${s} – ${e}</div>`;
+                        }
+                    } else if (isTerminal) {
+                        locHTML = `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;background:#F0FDFA;color:#0D9488;border:1px solid rgba(13,148,136,.15);">
+                    <i data-lucide="plane" style="width:11px;height:11px;"></i> Terminal Ops
+                </span>`;
+                        if (a.internship_start && a.internship_end) {
+                            const s = new Date(a.internship_start).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                            const e = new Date(a.internship_end).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                            locHTML += `<div style="font-size:10px;color:#94A3B8;margin-top:4px;">📅 ${s} – ${e}</div>`;
+                        }
                     }
+                    // Jika locHTML masih '', kolom dibiarkan kosong (tidak ada "—")
 
                     const pendingDocsCount = typeof countPendingDocs === 'function' ? countPendingDocs(a) : 0;
                     const isChecked = selectedIds.has(a.id);
 
-                    tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 transition-colors group ${isChecked ? 'bg-sky-50/50' : ''}">
-                    <td class="pl-6 pr-2 py-4 text-center">
-                        <input type="checkbox" class="row-check w-4 h-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer transition-colors" data-id="${a.id}" onchange="toggleRowCheck(this)" ${isChecked ? 'checked' : ''}>
+                    // Tombol aksi — selalu terlihat, dengan label tooltip dan warna jelas
+                    const btnDocReview = `
+                <button onclick="openDocReviewModal(${a.id})"
+                    style="position:relative;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;"
+                    onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'"
+                    title="Review Dokumen">
+                    <i data-lucide="file-check-2" style="width:13px;height:13px;flex-shrink:0;"></i>
+                    Dokumen
+                    ${pendingDocsCount > 0 ? `<span style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#F59E0B;color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;">${pendingDocsCount}</span>` : ''}
+                </button>`;
+
+            const btnAccept = a.status === 'pending' ? `
+                <button onclick="openPlacementModal(${a.id}, '${a.name.replace(/'/g, "\\'")}')"
+                    style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;"
+                    onmouseover="this.style.background='#DCFCE7'" onmouseout="this.style.background='#F0FDF4'"
+                    title="Terima & Tentukan Penempatan">
+                    <i data-lucide="user-check" style="width:13px;height:13px;flex-shrink:0;"></i>
+                    Terima
+                </button>` : '';
+
+            const btnLetter = a.status === 'accepted' ? `
+                <button onclick="triggerReplyLetterUpload(${a.id})"
+                    style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;background:${a.reply_letter_path ? '#F0FDF4' : '#FFFBEB'};color:${a.reply_letter_path ? '#16A34A' : '#D97706'};border:1px solid ${a.reply_letter_path ? '#BBF7D0' : '#FDE68A'};"
+                    onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'"
+                    title="${a.reply_letter_path ? 'Ganti surat balasan' : 'Upload surat balasan'}">
+                    <i data-lucide="${a.reply_letter_path ? 'file-check-2' : 'file-warning'}" style="width:13px;height:13px;flex-shrink:0;"></i>
+                    Surat
+                </button>` : '';
+
+            const btnEdit = `
+                <button onclick="openReviewModal(${a.id})"
+                    style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;cursor:pointer;transition:all .15s;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;"
+                    onmouseover="this.style.background='#FEF3C7';this.style.color='#D97706';this.style.borderColor='#FDE68A'" onmouseout="this.style.background='#F8FAFC';this.style.color='#64748B';this.style.borderColor='#E2E8F0'"
+                    title="Edit Status">
+                    <i data-lucide="pencil" style="width:13px;height:13px;"></i>
+                </button>`;
+
+            const btnDelete = `
+                <button onclick="deleteApp(${a.id})"
+                    style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;cursor:pointer;transition:all .15s;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;"
+                    onmouseover="this.style.background='#FEF2F2';this.style.color='#DC2626';this.style.borderColor='#FECACA'" onmouseout="this.style.background='#F8FAFC';this.style.color='#64748B';this.style.borderColor='#E2E8F0'"
+                    title="Hapus">
+                    <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
+                </button>`;
+
+            tbody.innerHTML += `
+                <tr style="border-bottom:1px solid #F1F5F9;transition:background .12s;${isChecked ? 'background:#EFF6FF;' : ''}"
+                    onmouseover="if(!this.dataset.checked)this.style.background='#F8FAFC'"
+                    onmouseout="if(!this.dataset.checked)this.style.background=''"
+                    ${isChecked ? 'data-checked="1"' : ''}>
+                    <td style="width:44px;text-align:center;padding:12px 8px 12px 16px;">
+                        <input type="checkbox" class="row-check" data-id="${a.id}" onchange="toggleRowCheck(this)" ${isChecked ? 'checked' : ''}
+                            style="width:14px;height:14px;cursor:pointer;accent-color:#2563EB;">
                     </td>
-                    <td class="px-4 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0">
+                    <td style="padding:12px 14px;min-width:200px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div style="width:36px;height:36px;border-radius:10px;background:#F1F5F9;border:1px solid #E2E8F0;color:#475569;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                                 ${initials}
                             </div>
-                            <div>
-                                <div class="font-bold text-slate-800 text-sm">${a.name}</div>
-                                <div class="text-[11px] text-slate-400 font-mono mt-0.5">NIM: ${a.nim || '<em class="opacity-50">—</em>'}</div>
+                            <div style="min-width:0;">
+                                <div style="font-weight:700;color:#0F172A;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;" title="${a.name}">${a.name}</div>
+                                ${a.nim ? `<div style="font-size:11px;color:#94A3B8;font-family:'JetBrains Mono',monospace;margin-top:2px;">${a.nim}</div>` : ''}
                             </div>
                         </div>
                     </td>
-                    <td class="px-4 py-4">
-                        <span class="font-mono text-[11px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-md tracking-wide">${a.code}</span>
+                    <td style="padding:12px 14px;white-space:nowrap;">
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#2563EB;background:#EFF6FF;border:1px solid #BFDBFE;padding:3px 8px;border-radius:5px;letter-spacing:.03em;">${a.code || ''}</span>
                     </td>
-                    <td class="px-4 py-4">
-                        <div class="font-bold text-slate-700 text-xs">${a.univ}</div>
-                        <div class="text-[11px] font-medium text-slate-500 mt-0.5 max-w-[200px] truncate" title="${a.major}">${a.major}</div>
+                    <td style="padding:12px 14px;min-width:160px;">
+                        <div style="font-weight:600;color:#0F172A;font-size:12.5px;">${a.univ || ''}</div>
+                        <div style="font-size:11px;color:#64748B;margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.major || ''}">${a.major || ''}</div>
                     </td>
-                    <td class="px-4 py-4">${badge}</td>
-                    <td class="px-4 py-4">${locText}</td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onclick="openDocReviewModal(${a.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors relative" title="Review Dokumen">
-                                <i data-lucide="file-check-2" class="w-4 h-4"></i>
-                                ${pendingDocsCount > 0 ? `<span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[8px] font-bold">${pendingDocsCount}</span>` : ''}
-                            </button>
-                            ${a.status === 'pending' ? `<button onclick="openPlacementModal(${a.id}, '${a.name.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Terima Pelamar">
-                                <i data-lucide="user-check" class="w-4 h-4"></i>
-                            </button>` : ''}
-                            ${a.status === 'accepted' ? `<button onclick="triggerReplyLetterUpload(${a.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="${a.reply_letter_path ? 'Ganti surat balasan' : 'Upload surat balasan'}">
-                                <i data-lucide="${a.reply_letter_path ? 'file-check-2' : 'file-warning'}" class="w-4 h-4 ${a.reply_letter_path ? 'text-emerald-500' : 'text-amber-500'}"></i>
-                            </button>` : ''}
-                            <button onclick="openReviewModal(${a.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors" title="Edit Status">
-                                <i data-lucide="file-edit" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="deleteApp(${a.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Hapus">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                    <td style="padding:12px 14px;white-space:nowrap;">${badge}</td>
+                    <td style="padding:12px 14px;min-width:140px;">${locHTML}</td>
+                    <td style="padding:12px 14px;text-align:right;">
+                        <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-wrap:nowrap;">
+                            ${btnDocReview}
+                            ${btnAccept}
+                            ${btnLetter}
+                            ${btnEdit}
+                            ${btnDelete}
                         </div>
                     </td>
                 </tr>`;

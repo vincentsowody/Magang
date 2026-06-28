@@ -38,7 +38,7 @@
                 ondragover="importHandleDragOver(event)"
                 ondragleave="importHandleDragLeave(event)"
                 ondrop="importHandleDrop(event)"
-                style="border:2px dashed rgba(255,255,255,0.1);border-radius:var(--radius);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s">
+                style="border:2px dashed var(--border);border-radius:var(--r-lg);padding:36px 24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface-muted)">
                 <input type="file" id="import-file-input" style="display:none" accept=".xlsx,.xls,.csv" onchange="importHandleFileSelect(event)">
 
                 <div id="import-drop-idle">
@@ -142,9 +142,17 @@
         </div>
 
         {{-- Footer --}}
-        <div class="modal-ftr">
-            <button onclick="closeImportModal()" class="btn-ghost" style="flex:1;justify-content:center">Batal</button>
-            <button onclick="handleImportSubmit()" id="import-submit-btn" class="btn-primary" style="flex:1;justify-content:center" disabled>
+        <div class="modal-ftr" style="padding:16px 22px">
+            <button onclick="closeImportModal()"
+                class="btn btn-ghost"
+                style="flex:1;height:42px;font-size:13px;font-weight:600;border-radius:9px">
+                Batal
+            </button>
+            <button onclick="handleImportSubmit()"
+                id="import-submit-btn"
+                class="btn btn-primary"
+                style="flex:2;height:42px;font-size:13px;font-weight:600;border-radius:9px;gap:8px"
+                disabled>
                 <i data-lucide="upload" style="width:14px;height:14px"></i>
                 <span id="import-submit-label">Pilih file dulu</span>
             </button>

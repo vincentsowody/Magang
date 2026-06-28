@@ -496,31 +496,69 @@ async function doLogin() {
 }
 
 function enterPortal() {
+    // Sembunyikan halaman login
+    const loginView = document.getElementById('view-login');
+    if (loginView) loginView.style.display = 'none';
+
+    // Tampilkan navigasi & tombol logout
     const navTabs = document.getElementById('nav-tabs-wrap');
     if (navTabs) navTabs.style.display = 'block';
 
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) logoutBtn.style.display = 'flex';
 
-    showTab('status');
+    // Aktifkan tab "status" di navbar
+    ['status','dokumen','notifikasi'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (btn) btn.classList.remove('active');
+    });
+    const statusTab = document.getElementById('tab-status');
+    if (statusTab) statusTab.classList.add('active');
+
+    // Tampilkan view status yang sesuai (accepted / pending / rejected)
+    renderStatus();
     startNotifPoll();
 }
 
 // ── TABS & VIEWS ─────────────────────────────────────────────
 function showTab(tab) {
+    // Nonaktifkan semua tab button
     ['status','dokumen','notifikasi'].forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
-        const view = document.getElementById(`view-${t}`);
-        if (btn)  btn.classList.remove('active');
-        if (view) view.style.display = 'none';
+        if (btn) btn.classList.remove('active');
     });
-    const activeBtn  = document.getElementById(`tab-${tab}`);
-    const activeView = document.getElementById(`view-${tab}`);
-    if (activeBtn)  activeBtn.classList.add('active');
-    if (activeView) { activeView.style.display = 'block'; }
 
-    if (tab === 'dokumen')    loadDocs();
-    if (tab === 'notifikasi') loadNotifs();
+    // Aktifkan tab yang dipilih
+    const activeBtn = document.getElementById(`tab-${tab}`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    if (tab === 'status') {
+        // Sembunyikan view lain
+        ['view-dokumen','view-notifikasi','view-accepted','view-pending','view-rejected'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+        // Tampilkan view status sesuai data user
+        renderStatus();
+    } else if (tab === 'dokumen') {
+        // Sembunyikan view status & notifikasi
+        ['view-accepted','view-pending','view-rejected','view-notifikasi'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+        const dokView = document.getElementById('view-dokumen');
+        if (dokView) dokView.style.display = 'grid';
+        loadDocs();
+    } else if (tab === 'notifikasi') {
+        // Sembunyikan view status & dokumen
+        ['view-accepted','view-pending','view-rejected','view-dokumen'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+        const notifView = document.getElementById('view-notifikasi');
+        if (notifView) notifView.style.display = 'block';
+        loadNotifs();
+    }
 }
 
 function showView(id) {
@@ -574,7 +612,7 @@ let adminDocsList = [];
 
 async function loadAdminDocs() {
     const el  = document.getElementById('admin-doc-list');
-    const loc = currentUser?.location || null;
+    const loc = (currentUser && currentUser.location) ? currentUser.location : null;
 
     if (!currentUser || !loc) {
         if (el && !el.querySelector('a')) {
@@ -936,7 +974,8 @@ function doLogout() {
 
 // ── COPY CODE ──────────────────────────────────────────
 function copyCode() {
-    const code = document.getElementById('generated-code')?.textContent?.trim();
+    const codeEl = document.getElementById('generated-code');
+    const code = (codeEl && codeEl.textContent) ? codeEl.textContent.trim() : '';
     if (!code) return;
     navigator.clipboard.writeText(code).then(() => {
         const hint = document.getElementById('copy-hint');
